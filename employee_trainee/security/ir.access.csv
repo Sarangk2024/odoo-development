@@ -1,0 +1,2 @@
+id,name,model_id,group_id/id,operation,domain
+access_employee_trainee,employee_trainee_model,employee.trainee,base.group_user,crud,

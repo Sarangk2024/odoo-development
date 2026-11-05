@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--    workshop job order model action   -->
+    <record id="workshop_job_order_action" model="ir.actions.act_window">
+        <field name="name">Create New</field>
+        <field name="res_model">workshop.job.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!--    vehicle model form  -->
+    <record id="workshop_job_order_main_form_view" model="ir.ui.view">
+        <field name="name">workshop.job.order.form.view</field>
+        <field name="model">workshop.job.order</field>
+        <field name="arch" type="xml">
+            <form string="Form">
+                <header>
+                    <button name="confirm_work_action" type="object" string="Confirm"
+                            invisible="state !='draft'"/>
+                    <button name="cancel_work_action" type="object" string="Cancel"
+                            invisible="state not in ['confirmed','in_progress']"/>
+
+                    <button name="action_start" type="object" string="Start"
+                            invisible="state !='confirmed'"/>
+                    <button name="action_done" type="object" string="Done"
+                            invisible="state !='in_progress'"/>
+
+                    <field name="state" widget="statusbar" options="{'clickable':'1'}"/>
+                </header>
+                <sheet>
+                    <field name="image_id" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="sequence"/>
+                        <h1>
+                            <field name="sequence" placeholder="Sequence Number"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Work Details">
+                            <field name="customer_id"/>
+                            <field name="phone_number"/>
+                            <field name="vehicle_id"/>
+                            <field name="mechanic_id"/>
+                            <field name="bay_id"/>
+                            <field name="job_date"/>
+                        </group>
+                        <group string="Additional Info">
+                            <field name="customer_notes"/>
+                            <field name="warranty_status"/>
+                            <field name="total_amount"/>
+                        </group>
+
+                    </group>
+                    <group>
+                        <notebook>
+                            <page string="Other info">
+                                <field name="repair_instructions" placeholder="Write down the Repair Instructions"/>
+                            </page>
+                        </notebook>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!--    vehicle model list view    -->
+    <record id="vehicle_main_list_view" model="ir.ui.view">
+        <field name="name">workshop.job.order.list.view</field>
+        <field name="model">workshop.job.order</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence"/>
+                <field name="customer_id"/>
+                <field name="vehicle_id"/>
+                <field name="mechanic_id"/>
+                <field name="bay_id"/>
+                <field name="job_date"/>
+                <field name="warranty_status"/>
+                <field name="state"/>
+                <field name="total_amount"/>
+            </list>
+        </field>
+    </record>
+
+    <!--    vehicle model search   -->
+    <record id="workshop_job_search" model="ir.ui.view">
+        <field name="name">workshop.job.order.model.search</field>
+        <field name="model">workshop.job.order</field>
+        <field name="arch" type="xml">
+            <search string="workshop job order">
+                <field name="customer_id"/>
+                <field name="vehicle_id"/>
+                <field name="mechanic_id"/>
+                <field name="bay_id"/>
+                <field name="job_date"/>
+                <field name="state"/>
+
+                <filter string="Status Done" name="Done" domain="[('state', '=', 'done')]"/>
+                <filter string="Status Cancel" name="Cancel" domain="[('state', '=', 'cancel')]"/>
+
+
+                <group>
+                    <filter string="work Status" name="state" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

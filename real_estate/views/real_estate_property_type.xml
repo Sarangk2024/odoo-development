@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+<!--    Property type list view     -->
+    <record id="real_estate_type_list_view" model="ir.ui.view">
+        <field name="name">real.estate.type.list.view</field>
+        <field name="model">estate.property.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="property_type"/>
+                <field name="offer_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!--    property type from view     -->
+    <record id="real_estate_type_view_form" model="ir.ui.view">
+        <field name="name">real.estate.type.form</field>
+        <field name="model">estate.property.type</field>
+        <field name="arch" type="xml">
+            <form string="Test">
+                <head>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="%(action_real_estate_property_offer)d"
+                                type="action" icon="payments">
+                            <field name="offer_count" widget="statinfo" string="Offers"/>
+                        </button>
+                    </div>
+                </head>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="property_type"/>
+                        </group>
+
+                    </group>
+                    <notebook>
+                        <page string="Properties">
+                            <field name="property_type_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="price"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_real_estate_type" model="ir.actions.act_window">
+        <field name="name">Property Type</field>
+        <field name="res_model">estate.property.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

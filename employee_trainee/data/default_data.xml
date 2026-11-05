@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="default_job_type_data_washing" model="employee.trainee">
+        <field name="name">Washing</field>
+    </record>
+    <record id="default_job_type_data_alignment" model="employee.trainee">
+        <field name="name">Alignment</field>
+    </record>
+    <record id="default_job_type_data_repair" model="employee.trainee">
+        <field name="name">Repair</field>
+    </record>
+    <record id="default_job_type_data_paintiing" model="employee.trainee">
+        <field name="name">Painting</field>
+    </record>
+</odoo>

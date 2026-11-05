@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--    main model list view    -->
+    <record id="workshop_main_list_view" model="ir.ui.view">
+        <field name="name">workshop.bay.list.view</field>
+        <field name="model">workshop.bay</field>
+        <field name="arch" type="xml">
+            <list delete="0">
+                <field name="bay_name"/>
+                <field name="Assigned_employee_id"/>
+                <field name="bay_type"/>
+                <field name="bay_status"/>
+            </list>
+        </field>
+    </record>
+
+    <!--    main model form view    -->
+    <record id="workshop_main_form_view" model="ir.ui.view">
+        <field name="name">workshop.bay.form.view</field>
+        <field name="model">workshop.bay</field>
+        <field name="arch" type="xml">
+            <form string="Form" delete="0">
+                <header>
+                    <button name="submit_button_action" type="object" string="Submit"/>
+                    <button name="cancel_button_action" type="object" string="Cancel"/>
+
+                    <field name="bay_status" widget="statusbar" options="{'clickable':'1'}"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title">
+                        <label for="bay_name"/>
+                        <h1>
+                            <field name="bay_name" placeholder="Bay Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Bay Details">
+                            <field name="Assigned_employee_id"/>
+                            <field name="bay_type"/>
+                            <field name="bay_status"/>
+                            <field name="ongoing_job_id"/>
+                            <field name="job_type_id" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group>
+                        <notebook>
+                            <page string="Other info">
+                                <group>
+                                    <field name="active"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!--    main model search   -->
+    <record id="workshop_bay_search" model="ir.ui.view">
+        <field name="name">workshop.bay.search</field>
+        <field name="model">workshop.bay</field>
+        <field name="arch" type="xml">
+            <search string="Workshop Bay">
+                <field name="bay_name"/>
+                <field name="Assigned_employee_id"/>
+                <field name="bay_type"/>
+                <field name="bay_status"/>
+
+                <filter string="Available" name="available" domain="[('bay_status', '=', 'free')]"/>
+                <filter string="Not Available" name="not available" domain="[('bay_status', '=', 'occupied')]"/>
+
+                <group>
+                    <filter string="Bay Name" name="bay_name" context="{'group_by':'bay_name'}"/>
+                    <filter string="Bay Status" name="bay_status" context="{'group_by':'bay_status'}"/>
+                    <filter string="Bay Type" name="bay_type" context="{'group_by':'bay_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!--    main model action   -->
+    <record id="workshop_management_action" model="ir.actions.act_window">
+        <field name="name">Create New</field>
+        <field name="res_model">workshop.bay</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_available': True}</field>
+    </record>
+
+</odoo>

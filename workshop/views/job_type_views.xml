@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--    Job Type model list view    -->
+    <record id="job_type_list_view" model="ir.ui.view">
+        <field name="name">job.type.list.view</field>
+        <field name="model">job.type</field>
+        <field name="arch" type="xml">
+            <list delete="0" editable="bottom">
+                <field name="job_type_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!--    Job Type model form view    -->
+    <record id="job_type_form_view" model="ir.ui.view">
+        <field name="name">job.type.form.view</field>
+        <field name="model">job.type</field>
+        <field name="arch" type="xml">
+            <form string="Form" delete="0">
+                <sheet>
+                    <group>
+                        <field name="job_type_id" placeholder="Job Type Name"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!--    Job Type model search   -->
+    <record id="job_type_search" model="ir.ui.view">
+        <field name="name">job.type.search</field>
+        <field name="model">job.type</field>
+        <field name="arch" type="xml">
+            <search string="Job Type">
+                <field name="job_type_id"/>
+                <group>
+                    <filter string="job Type Name" name="job_type_id" context="{'group_by':'job_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!--    main model action   -->
+    <record id="job_type_action" model="ir.actions.act_window">
+        <field name="name">Create New</field>
+        <field name="res_model">job.type</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

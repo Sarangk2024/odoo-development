@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--    vehicle model action   -->
+    <record id="vehicle_management_action" model="ir.actions.act_window">
+        <field name="name">Create New</field>
+        <field name="res_model">vehicle.management</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!--    vehicle model form  -->
+    <record id="vehicle_main_form_view" model="ir.ui.view">
+        <field name="name">vehicle.management.form.view</field>
+        <field name="model">vehicle.management</field>
+        <field name="arch" type="xml">
+            <form string="Form">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="license_plate"/>
+                        <h1>
+                            <field name="license_plate" placeholder="License Plate"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Vehicle Details">
+                            <field name="vin"/>
+                            <field name="make"/>
+                            <field name="model"/>
+                            <field name="year"/>
+                            <field name="colour"/>
+                            <field name="odometer"/>
+                            <field name="owner_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <notebook>
+                            <page string="Other info">
+                                <group>
+                                    <field name="active"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!--    vehicle model list view    -->
+    <record id="vehicle_main_list_view" model="ir.ui.view">
+        <field name="name">vehicle.management.list.view</field>
+        <field name="model">vehicle.management</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="license_plate"/>
+                <field name="vin"/>
+                <field name="make"/>
+                <field name="model"/>
+                <field name="year"/>
+                <field name="colour"/>
+                <field name="odometer"/>
+                <field name="owner_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!--    vehicle model search   -->
+    <record id="vehicle_search" model="ir.ui.view">
+        <field name="name">vehicle.mode.search</field>
+        <field name="model">vehicle.management</field>
+        <field name="arch" type="xml">
+            <search string="vehicle Bay">
+                <field name="license_plate"/>
+                <field name="vin"/>
+                <field name="make"/>
+                <field name="model"/>
+                <field name="year"/>
+                <field name="odometer" filter_domain="[('odometer','>=', self)]"/>
+                <field name="colour"/>
+                <field name="owner_id"/>
+
+                <filter string="Honda" name="Honda" domain="[('make', '=', 'Honda')]"/>
+                <filter string="Toyota" name="Toyota" domain="[('make', '=', 'Toyota')]"/>
+                <filter string="Ford" name="Ford" domain="[('make', '=', 'Ford')]"/>
+
+
+                <group>
+                    <filter string="Vehicle make" name="make" context="{'group_by':'make'}"/>
+                    <filter string="Year" name="year" context="{'group_by':'year'}"/>
+                    <filter string="KM" name="odometer" context="{'group_by':'odometer'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>
