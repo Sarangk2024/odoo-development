@@ -5,8 +5,8 @@
         <field name="name">job.type.list.view</field>
         <field name="model">job.type</field>
         <field name="arch" type="xml">
-            <list delete="0" editable="bottom">
-                <field name="job_type_id"/>
+            <list editable="bottom">
+                <field name="job_type"/>
             </list>
         </field>
     </record>
@@ -16,10 +16,10 @@
         <field name="name">job.type.form.view</field>
         <field name="model">job.type</field>
         <field name="arch" type="xml">
-            <form string="Form" delete="0">
+            <form string="Form">
                 <sheet>
                     <group>
-                        <field name="job_type_id" placeholder="Job Type Name"/>
+                        <field name="job_type" placeholder="Job Type Name"/>
                     </group>
                 </sheet>
                 <chatter/>
@@ -33,9 +33,9 @@
         <field name="model">job.type</field>
         <field name="arch" type="xml">
             <search string="Job Type">
-                <field name="job_type_id"/>
+                <field name="job_type"/>
                 <group>
-                    <filter string="job Type Name" name="job_type_id" context="{'group_by':'job_type_id'}"/>
+                    <filter string="job Type Name" name="job_type" context="{'group_by':'job_type'}"/>
                 </group>
             </search>
         </field>

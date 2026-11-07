@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <!--    workshop job order model action   -->
-    <record id="workshop_job_order_action" model="ir.actions.act_window">
-        <field name="name">Create New</field>
-        <field name="res_model">workshop.job.order</field>
-        <field name="view_mode">list,form</field>
-    </record>
-
     <!--    vehicle model form  -->
     <record id="workshop_job_order_main_form_view" model="ir.ui.view">
         <field name="name">workshop.job.order.form.view</field>
@@ -14,15 +7,16 @@
         <field name="arch" type="xml">
             <form string="Form">
                 <header>
-                    <button name="confirm_work_action" type="object" string="Confirm"
+                    <button name="action_confirm_work" type="object" string="Confirm" class="btn-primary"
                             invisible="state !='draft'"/>
-                    <button name="cancel_work_action" type="object" string="Cancel"
+                    <button name="action_cancel_work" type="object" string="Cancel"
                             invisible="state not in ['confirmed','in_progress']"/>
-
-                    <button name="action_start" type="object" string="Start"
+                    <button name="action_start" type="object" string="Start" class="btn-primary"
                             invisible="state !='confirmed'"/>
-                    <button name="action_done" type="object" string="Done"
+                    <button name="action_done" type="object" string="Done" class="btn-primary"
                             invisible="state !='in_progress'"/>
+                    <button name="action_invoiced" type="object" string="Create Invoice" class="btn-primary"
+                            invisible="state !='done'"/>
 
                     <field name="state" widget="statusbar" options="{'clickable':'1'}"/>
                 </header>
@@ -39,7 +33,7 @@
                             <field name="customer_id"/>
                             <field name="phone_number"/>
                             <field name="vehicle_id"/>
-                            <field name="mechanic_id"/>
+                            <field name="mechanic_ids" widget="many2many_tags"/>
                             <field name="bay_id"/>
                             <field name="job_date"/>
                         </group>
@@ -48,11 +42,10 @@
                             <field name="warranty_status"/>
                             <field name="total_amount"/>
                         </group>
-
                     </group>
                     <group>
                         <notebook>
-                            <page string="Other info">
+                            <page string="Repair info">
                                 <field name="repair_instructions" placeholder="Write down the Repair Instructions"/>
                             </page>
                         </notebook>
@@ -72,7 +65,7 @@
                 <field name="sequence"/>
                 <field name="customer_id"/>
                 <field name="vehicle_id"/>
-                <field name="mechanic_id"/>
+                <field name="mechanic_ids"/>
                 <field name="bay_id"/>
                 <field name="job_date"/>
                 <field name="warranty_status"/>
@@ -90,19 +83,24 @@
             <search string="workshop job order">
                 <field name="customer_id"/>
                 <field name="vehicle_id"/>
-                <field name="mechanic_id"/>
+                <field name="mechanic_ids"/>
                 <field name="bay_id"/>
                 <field name="job_date"/>
                 <field name="state"/>
 
                 <filter string="Status Done" name="Done" domain="[('state', '=', 'done')]"/>
                 <filter string="Status Cancel" name="Cancel" domain="[('state', '=', 'cancel')]"/>
-
-
                 <group>
                     <filter string="work Status" name="state" context="{'group_by':'state'}"/>
                 </group>
             </search>
         </field>
+    </record>
+
+    <!--    workshop job order model action   -->
+    <record id="workshop_job_order_action" model="ir.actions.act_window">
+        <field name="name">Create New</field>
+        <field name="res_model">workshop.job.order</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

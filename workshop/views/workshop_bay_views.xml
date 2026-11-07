@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <list delete="0">
                 <field name="bay_name"/>
-                <field name="Assigned_employee_id"/>
+                <field name="assigned_employee_id"/>
                 <field name="bay_type"/>
                 <field name="bay_status"/>
             </list>
@@ -21,9 +21,10 @@
         <field name="arch" type="xml">
             <form string="Form" delete="0">
                 <header>
-                    <button name="submit_button_action" type="object" string="Submit"/>
-                    <button name="cancel_button_action" type="object" string="Cancel"/>
-
+                    <button name="submit_button_action" type="object" string="Submit" class="btn-primary"
+                            invisible="bay_status in ['occupied','closed']"/>
+                    <button name="cancel_button_action" type="object" string="Cancel" class="btn-primary"
+                            invisible="bay_status in ['free','closed']"/>
                     <field name="bay_status" widget="statusbar" options="{'clickable':'1'}"/>
                 </header>
 
@@ -36,19 +37,16 @@
                     </div>
                     <group>
                         <group string="Bay Details">
-                            <field name="Assigned_employee_id"/>
+                            <field name="assigned_employee_id"/>
                             <field name="bay_type"/>
                             <field name="bay_status"/>
-                            <field name="ongoing_job_id"/>
-                            <field name="job_type_id" widget="many2many_tags"/>
+                            <field name="job_type_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                     <group>
                         <notebook>
-                            <page string="Other info">
-                                <group>
-                                    <field name="active"/>
-                                </group>
+                            <page string="Jobs">
+                                <field name="ongoing_job_ids"/>
                             </page>
                         </notebook>
                     </group>
@@ -65,7 +63,7 @@
         <field name="arch" type="xml">
             <search string="Workshop Bay">
                 <field name="bay_name"/>
-                <field name="Assigned_employee_id"/>
+                <field name="assigned_employee_id"/>
                 <field name="bay_type"/>
                 <field name="bay_status"/>
 
