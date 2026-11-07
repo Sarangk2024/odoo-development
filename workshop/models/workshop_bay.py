@@ -7,7 +7,7 @@ from odoo.exceptions import UserError
 class WorkshopBay(models.Model):
     '''Describe the Workshop Bay'''
     _name = 'workshop.bay'
-    _description = 'Workshop management'
+    _description = 'Bay'
     _rec_name = 'bay_name'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
@@ -26,7 +26,7 @@ class WorkshopBay(models.Model):
         ('closed', 'Closed'),
     ],string='Bay Status', required=True, default='free',tracking=True,readonly=True)
     active = fields.Boolean(default=True)
-    ongoing_job_ids = fields.One2many('workshop.job.order','bay_id',string='Job')
+    ongoing_job_ids = fields.One2many('workshop.job.order','bay_id',string='Job', domain=[('state','=','in_progress')])
     job_type_ids = fields.Many2many('job.type',string='Job Type', required=True)
 
     def submit_button_action(self):
@@ -39,3 +39,5 @@ class WorkshopBay(models.Model):
             raise UserError("This Bay Already In Progress Job")
         else:
             self.bay_status = 'free'
+
+    # z

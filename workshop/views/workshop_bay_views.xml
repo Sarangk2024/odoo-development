@@ -81,7 +81,7 @@
 
     <!--    main model action   -->
     <record id="workshop_management_action" model="ir.actions.act_window">
-        <field name="name">Create New</field>
+        <field name="name">Bay</field>
         <field name="res_model">workshop.bay</field>
         <field name="view_mode">list,form</field>
         <field name="context">{'search_default_available': True}</field>

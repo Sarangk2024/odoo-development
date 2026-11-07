@@ -6,7 +6,7 @@ from odoo.exceptions import UserError
 
 class WorkshopJobOrder(models.Model):
     _name = "workshop.job.order"
-    _description = "Workshop Job Order Management"
+    _description = "Workshop Job"
     _rec_name = 'sequence'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
@@ -15,8 +15,8 @@ class WorkshopJobOrder(models.Model):
     phone_number = fields.Char(string="Phone Number")
     vehicle_id = fields.Many2one(comodel_name='vehicle.management', string="Vehicle",ondelete='restrict', required=True, domain="[('owner_id', '=',customer_id )] if customer_id else []")
     mechanic_ids = fields.Many2many(comodel_name='hr.employee', string="Mechanics",tracking=True, required=True)
-    bay_id = fields.Many2one(comodel_name='workshop.bay', string="Bay",tracking=True)
-    job_date = fields.Date(string="Job Date", required=True)
+    bay_id = fields.Many2one(comodel_name='workshop.bay', string="Bay",tracking=True, required=True ,domain="[('bay_status', '=','free')]")
+    job_date = fields.Date(string="Job Date", required=True, default=fields.Date.today())
     customer_notes = fields.Text(string="Customer Notes" , help="Customer's reported issue")
     image_id = fields.Image( string="Vehicle Image")
     warranty_status = fields.Boolean(string="Warranty Status",help='indicating whether the vehicle is under warranty')
@@ -63,7 +63,6 @@ class WorkshopJobOrder(models.Model):
         '''setinig the job as done and chnage the bay availability'''
         if self.bay_id.ongoing_job_ids == self:
             self.bay_id.bay_status = 'free'
-            self.bay_id.ongoing_job_ids=False
 
         self.state = 'done'
 
@@ -77,10 +76,13 @@ class WorkshopJobOrder(models.Model):
         '''getting phone number of the selected customer and there vehicles'''
         if self.customer_id:
             self.phone_number = self.customer_id.phone
-            self.vehicle_id = False
-            return {'domain': {'vehicle_id': [('owner_id', '=', self.customer_id)]}}
         else:
-            return {'domain': {'vehicle_id': []}}
+            self.phone_number = None
+            self.vehicle_id = None
+        #     self.vehicle_id = False
+        #     return {'domain': {'vehicle_id': [('owner_id', '=', self.customer_id)]}}
+        # else:
+        #     return {'domain': {'vehicle_id': []}}
 
 
     @api.onchange('vehicle_id')
@@ -102,4 +104,3 @@ class WorkshopJobOrder(models.Model):
     #             print(record.customer_id)
     #             record.vehicle_id.owner_id = record.customer_id
     #             print(record.vehicle_id.owner_id)
-

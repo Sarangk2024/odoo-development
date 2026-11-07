@@ -99,7 +99,7 @@
 
     <!--    workshop job order model action   -->
     <record id="workshop_job_order_action" model="ir.actions.act_window">
-        <field name="name">Create New</field>
+        <field name="name">Work Order</field>
         <field name="res_model">workshop.job.order</field>
         <field name="view_mode">list,form</field>
     </record>
