@@ -36,7 +36,7 @@
                         </h1>
                     </div>
                     <group>
-                        <group string="Bay Details">
+                        <group>
                             <field name="assigned_employee_id"/>
                             <field name="bay_type"/>
                             <field name="bay_status"/>

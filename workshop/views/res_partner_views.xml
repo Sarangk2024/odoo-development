@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="Big5" ?>
+<odoo>
+    <!--    inherited res.partner view  -->
+    <record id="res_partner_form_view" model="ir.ui.view">
+        <field name="name">res.partner.model.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_view_partner_invoices']"
+                   position="after">
+                <div class="oe_button_box" name="button_box">
+                    <button class="oe_stat_button"
+                            type="object" icon="directions_car"
+                            name="action_view_vehicles">
+                        <field name="vehicle_count" widget="statinfo"
+                               string="Vehicle's"/>
+                    </button>
+                </div>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Vehicles">
+                    <field name="vehicle_ids">
+                        <list>
+                            <field name="license_plate"/>
+                            <field name="make"/>
+                            <field name="model"/>
+                            <field name="vin"/>
+                            <field name="colour"/>
+                            <field name="odometer"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

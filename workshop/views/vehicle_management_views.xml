@@ -10,28 +10,23 @@
                     <div class="oe_title">
                         <label for="license_plate"/>
                         <h1>
-                            <field name="license_plate" placeholder="License Plate"/>
+                            <field name="license_plate"
+                                   placeholder="License Plate"/>
                         </h1>
                     </div>
                     <group>
-                        <group string="Vehicle Details">
+                        <group>
                             <field name="vin"/>
                             <field name="make"/>
                             <field name="model"/>
                             <field name="year"/>
+                        </group>
+
+                        <group>
                             <field name="colour"/>
                             <field name="odometer"/>
                             <field name="owner_id"/>
                         </group>
-                    </group>
-                    <group>
-                        <notebook>
-                            <page string="Other info">
-                                <group>
-                                    <field name="active"/>
-                                </group>
-                            </page>
-                        </notebook>
                     </group>
                 </sheet>
                 <chatter/>
@@ -68,19 +63,26 @@
                 <field name="make"/>
                 <field name="model"/>
                 <field name="year"/>
-                <field name="odometer" filter_domain="[('odometer','>=', self)]"/>
+                <field name="odometer"
+                       filter_domain="[('odometer','>=', self)]"/>
                 <field name="colour"/>
                 <field name="owner_id"/>
 
-                <filter string="Honda" name="Honda" domain="[('make', '=', 'Honda')]"/>
-                <filter string="Toyota" name="Toyota" domain="[('make', '=', 'Toyota')]"/>
-                <filter string="Ford" name="Ford" domain="[('make', '=', 'Ford')]"/>
+                <filter string="Honda" name="Honda"
+                        domain="[('make', '=', 'Honda')]"/>
+                <filter string="Toyota" name="Toyota"
+                        domain="[('make', '=', 'Toyota')]"/>
+                <filter string="Ford" name="Ford"
+                        domain="[('make', '=', 'Ford')]"/>
 
 
                 <group>
-                    <filter string="Vehicle make" name="make" context="{'group_by':'make'}"/>
-                    <filter string="Year" name="year" context="{'group_by':'year'}"/>
-                    <filter string="KM" name="odometer" context="{'group_by':'odometer'}"/>
+                    <filter string="Vehicle make" name="make"
+                            context="{'group_by':'make'}"/>
+                    <filter string="Year" name="year"
+                            context="{'group_by':'year'}"/>
+                    <filter string="KM" name="odometer"
+                            context="{'group_by':'odometer'}"/>
                 </group>
             </search>
         </field>
