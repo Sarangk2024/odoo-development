@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <!--    main model list view    -->
-    <record id="workshop_main_list_view" model="ir.ui.view">
+    <!--    workshop bay model list view    -->
+    <record id="workshop_bay_list_view" model="ir.ui.view">
         <field name="name">workshop.bay.list.view</field>
         <field name="model">workshop.bay</field>
         <field name="arch" type="xml">
@@ -14,18 +14,21 @@
         </field>
     </record>
 
-    <!--    main model form view    -->
-    <record id="workshop_main_form_view" model="ir.ui.view">
+    <!--    workshop bay model form view    -->
+    <record id="workshop_bay_form_view" model="ir.ui.view">
         <field name="name">workshop.bay.form.view</field>
         <field name="model">workshop.bay</field>
         <field name="arch" type="xml">
             <form string="Form" delete="0">
                 <header>
-                    <button name="submit_button_action" type="object" string="Submit" class="btn-primary"
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary"
                             invisible="bay_status in ['occupied','closed']"/>
-                    <button name="cancel_button_action" type="object" string="Cancel" class="btn-primary"
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-primary"
                             invisible="bay_status in ['free','closed']"/>
-                    <field name="bay_status" widget="statusbar" options="{'clickable':'1'}"/>
+                    <field name="bay_status" widget="statusbar"
+                           options="{'clickable':'1'}"/>
                 </header>
 
                 <sheet>
@@ -56,7 +59,7 @@
         </field>
     </record>
 
-    <!--    main model search   -->
+    <!--    workshop bay model search   -->
     <record id="workshop_bay_search" model="ir.ui.view">
         <field name="name">workshop.bay.search</field>
         <field name="model">workshop.bay</field>
@@ -67,20 +70,25 @@
                 <field name="bay_type"/>
                 <field name="bay_status"/>
 
-                <filter string="Available" name="available" domain="[('bay_status', '=', 'free')]"/>
-                <filter string="Not Available" name="not available" domain="[('bay_status', '=', 'occupied')]"/>
+                <filter string="Available" name="available"
+                        domain="[('bay_status', '=', 'free')]"/>
+                <filter string="Not Available" name="not available"
+                        domain="[('bay_status', '=', 'occupied')]"/>
 
                 <group>
-                    <filter string="Bay Name" name="bay_name" context="{'group_by':'bay_name'}"/>
-                    <filter string="Bay Status" name="bay_status" context="{'group_by':'bay_status'}"/>
-                    <filter string="Bay Type" name="bay_type" context="{'group_by':'bay_type'}"/>
+                    <filter string="Bay Name" name="bay_name"
+                            context="{'group_by':'bay_name'}"/>
+                    <filter string="Bay Status" name="bay_status"
+                            context="{'group_by':'bay_status'}"/>
+                    <filter string="Bay Type" name="bay_type"
+                            context="{'group_by':'bay_type'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-    <!--    main model action   -->
-    <record id="workshop_management_action" model="ir.actions.act_window">
+    <!--    workshop bay model action   -->
+    <record id="workshop_bay_action" model="ir.actions.act_window">
         <field name="name">Bay</field>
         <field name="res_model">workshop.bay</field>
         <field name="view_mode">list,form</field>

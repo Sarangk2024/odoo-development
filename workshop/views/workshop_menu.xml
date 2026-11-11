@@ -2,11 +2,16 @@
 <odoo>
     <data>
         <menuitem id="workshop_root_menu" name="Workshop">
-            <menuitem id="vehicle_menu" name="Vehicle" action="vehicle_management_action"/>
-            <menuitem id="work_job_order" name="Work Order" action="workshop_job_order_action"/>
-            <menuitem id="job_type_configuration" name="Configuration">
-                <menuitem id="configuration_first_level_job_type" name="Job Type" action="job_type_action"/>
-                <menuitem id="configuration_first_level_bay_type" name="Bay Management" action="workshop_management_action"/>
+            <menuitem id="vehicle_menu" name="Vehicle"
+                      action="vehicle_management_action"/>
+            <menuitem id="work_job_order_menu" name="Work Order"
+                      action="workshop_job_order_action"/>
+            <menuitem id="job_type_menu" name="Configuration">
+                <menuitem id="configuration_first_level_job_type"
+                          name="Job Type" action="job_type_action"/>
+                <menuitem id="workshop_bay_menu"
+                          name="Bay Management"
+                          action="workshop_bay_action"/>
             </menuitem>
         </menuitem>
     </data>

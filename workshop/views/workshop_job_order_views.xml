@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <!--    vehicle model form  -->
-    <record id="workshop_job_order_main_form_view" model="ir.ui.view">
+    <!--    workshop job order model form view -->
+    <record id="workshop_job_order_form_view" model="ir.ui.view">
         <field name="name">workshop.job.order.form.view</field>
         <field name="model">workshop.job.order</field>
         <field name="arch" type="xml">
@@ -19,16 +19,17 @@
                     <button name="action_done" type="object" string="Done"
                             class="btn-primary"
                             invisible="state !='in_progress'"/>
-                    <button name="action_invoiced" type="object"
-                            string="Create Invoice" class="btn-primary"
+                    <!--                    <button name="action_invoiced" type="object"-->
+                    <!--                            string="Create Invoice" class="btn-primary"-->
+                    <!--                            invisible="state !='done'"/>-->
+                    <button name="action_quotation" type="object"
+                            string="Create Quotation" class="btn-primary"
                             invisible="state !='done'"/>
 
-                    <field name="state" widget="statusbar"
-                           options="{'clickable':'1'}"/>
+                    <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="sequence"/>
                         <h1>
                             <field name="sequence"
                                    placeholder="Sequence Number" nolabel="1"/>
@@ -36,20 +37,22 @@
                     </div>
                     <group>
                         <group string="Customer Details">
-                            <field name="customer_id"/>
+                            <field name="customer_id"
+                                   readonly="state!='draft'"/>
                             <field name="phone_number"/>
-                            <field name="vehicle_id"/>
+                            <field name="vehicle_id" readonly="state!='draft'"/>
                             <field name="mechanic_ids" widget="many2many_tags"/>
                         </group>
                         <group string="Work Details">
                             <field name="job_type_id"
-                                   options="{'no_create':'1','no_edit':'1'}"/>
+                                   options="{'no_create':'1','no_edit':'1'}"
+                                   readonly="state!='draft'"/>
                             <field name="bay_id"
-                                   options="{'no_create':'1','no_edit':'1'}"/>
+                                   options="{'no_create':'1','no_edit':'1'}"
+                                   readonly="state!='draft'"/>
                             <field name="job_date"/>
                             <field name="warranty_status"/>
                             <field name="total_amount"/>
-                            <!--                            <field name="invoice_id" readonly="1"/>-->
                         </group>
                     </group>
                     <group>
@@ -80,14 +83,19 @@
                             </page>
                         </notebook>
                     </group>
+                    <h4>
+                        <group class="oe_subtotal_footer border-top-0 flex-column gap-3" >
+                            <field name="total_amount"/>
+                        </group>
+                    </h4>
                 </sheet>
                 <chatter/>
             </form>
         </field>
     </record>
 
-    <!--    vehicle model list view    -->
-    <record id="vehicle_main_list_view" model="ir.ui.view">
+    <!--    workshop job order model list view    -->
+    <record id="workshop_job_order_list_view" model="ir.ui.view">
         <field name="name">workshop.job.order.list.view</field>
         <field name="model">workshop.job.order</field>
         <field name="arch" type="xml">
@@ -105,8 +113,8 @@
         </field>
     </record>
 
-    <!--    vehicle model search   -->
-    <record id="workshop_job_search" model="ir.ui.view">
+    <!--    workshop joborder model search   -->
+    <record id="workshop_job_order_search" model="ir.ui.view">
         <field name="name">workshop.job.order.model.search</field>
         <field name="model">workshop.job.order</field>
         <field name="arch" type="xml">

@@ -37,11 +37,11 @@ class WorkshopBay(models.Model):
     job_type_ids = fields.Many2many('job.type', string='Job Type',
                                     required=True)
 
-    def submit_button_action(self):
+    def action_submit(self):
         '''submit button action. change the  bay status to occupied'''
         self.bay_status = 'occupied'
 
-    def cancel_button_action(self):
+    def action_cancel(self):
         '''cancel button action. change the  bay status to free and check if the order can be canceled '''
         if "in_progress" in self.ongoing_job_ids.mapped("state"):
             raise UserError("This Bay Already In Progress Job")

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <!--    vehicle model form  -->
-    <record id="vehicle_main_form_view" model="ir.ui.view">
+    <!--    vehicle model form view  -->
+    <record id="vehicle_management_form_view" model="ir.ui.view">
         <field name="name">vehicle.management.form.view</field>
         <field name="model">vehicle.management</field>
         <field name="arch" type="xml">
@@ -35,7 +35,7 @@
     </record>
 
     <!--    vehicle model list view    -->
-    <record id="vehicle_main_list_view" model="ir.ui.view">
+    <record id="vehicle_management_list_view" model="ir.ui.view">
         <field name="name">vehicle.management.list.view</field>
         <field name="model">vehicle.management</field>
         <field name="arch" type="xml">
@@ -53,7 +53,7 @@
     </record>
 
     <!--    vehicle model search   -->
-    <record id="vehicle_search" model="ir.ui.view">
+    <record id="vehicle_management_search" model="ir.ui.view">
         <field name="name">vehicle.mode.search</field>
         <field name="model">vehicle.management</field>
         <field name="arch" type="xml">

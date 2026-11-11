@@ -3,6 +3,7 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 
+
 class WorkshopJobOrder(models.Model):
     '''manage workshop job order model'''
     _name = "workshop.job.order"
@@ -10,11 +11,12 @@ class WorkshopJobOrder(models.Model):
     _rec_name = 'sequence'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    sequence = fields.Char(string=" ", default="New",
+    sequence = fields.Char(string="Sequence", default="New",
                            copy=False, readonly=True)
     customer_id = fields.Many2one(comodel_name='res.partner', string="Customer",
                                   tracking=True, required=True)
-    phone_number = fields.Char(string="Phone Number", related="customer_id.phone")
+    phone_number = fields.Char(string="Phone Number",
+                               related="customer_id.phone")
     vehicle_id = fields.Many2one(comodel_name='vehicle.management',
                                  string="Vehicle", ondelete='restrict',
                                  required=True,
@@ -25,11 +27,11 @@ class WorkshopJobOrder(models.Model):
     bay_id = fields.Many2one(comodel_name='workshop.bay', string="Bay",
                              tracking=True, required=True,
                              domain="[('job_type_ids','in',job_type_id)] if job_type_id else []")
-    job_date = fields.Date(string="Job Date", required=True,
-                           default=fields.Date.today())
+    job_date = fields.Datetime(string="Job Date", required=True,
+                           default=fields.Datetime.now())
     customer_notes = fields.Text(string="Customer Notes",
                                  help="Customer's reported issue")
-    image_id = fields.Many2many('ir.attachment',string="Vehicle Image")
+    image_id = fields.Many2many('ir.attachment', string="Vehicle Image")
     warranty_status = fields.Boolean(string="Under Warranty",
                                      help='indicating whether the vehicle is under warranty')
     repair_instructions = fields.Html(string="Repair Instructions")
@@ -43,8 +45,8 @@ class WorkshopJobOrder(models.Model):
     total_amount = fields.Float(string="Total Amount",
                                 compute='_compute_total_amount', store=True)
     active = fields.Boolean(default=True)
-    invoice_id = fields.Many2one('account.move', string="Invoice",
-                                 readonly=True, copy=False)
+    # invoice_id = fields.Many2one('account.move', string="Invoice",
+    #                              readonly=True, copy=False)
     job_type_id = fields.Many2one('job.type', help="Specify the job type")
     job_order_line_ids = fields.One2many('workshop.job.line',
                                          "job_order_line_id",
@@ -81,25 +83,25 @@ class WorkshopJobOrder(models.Model):
             raise UserError('Bay is Not Available')
 
     def action_done(self):
-        '''setinig the job as done and chnage the bay availability'''
+        '''setting the job as done and change the bay availability'''
         if self.bay_id.ongoing_job_ids == self:
             self.bay_id.bay_status = 'free'
         self.state = 'done'
 
     @api.onchange('customer_id')
-    def onchange_customer_id(self):
+    def _onchange_customer_id(self):
         '''getting phone number of the selected customer and there vehicles'''
         if self.customer_id:
             self.phone_number = self.customer_id.phone
 
     @api.onchange('vehicle_id')
-    def onchange_vehicle_id(self):
+    def _onchange_vehicle_id(self):
         '''finding customer from vehicle'''
         if self.vehicle_id:
             self.customer_id = self.vehicle_id.owner_id
 
     @api.onchange('job_type_id')
-    def onchange_job_type_id(self):
+    def _onchange_job_type_id(self):
         '''resetting bay type and job type'''
         if self.job_type_id:
             self.bay_id = None
@@ -111,12 +113,51 @@ class WorkshopJobOrder(models.Model):
     def _compute_total_amount(self):
         '''finding total amount from order lines'''
         for record in self:
-            total = 0
-            for line in record.job_order_line_ids:
-                total += line.line_subtotal
-            record.total_amount = total
+            record.total_amount = sum(
+                record.job_order_line_ids.mapped('line_subtotal'))
 
-    def action_invoiced(self):
-        '''setinig the job as done and chnage the bay availability'''
-        self.bay_id.bay_status = 'free'
-        self.state = 'invoiced'
+    # def action_invoiced(self):
+    #     '''setting the job as done and change the bay availability'''
+    #     self.bay_id.bay_status = 'free'
+    #     self.state = 'invoiced'
+
+    @api.onchange('job_date')
+    def _onchange_job_date(self):
+        """Validate date range and prevent  date from being earlier than today's date."""
+        date = fields.Datetime.now()
+        if self.job_date.date() < date.date():
+            self.job_date = date
+            return {
+                'warning': {
+                    'title': "Invalid Date",
+                    'message': "Job Date cannot be earlier than Today.",
+                }
+            }
+
+    def action_quotation(self):
+        '''setting the job as done and change the bay availability'''
+        for record in self:
+            sale_order_lines=[]
+            for line in record.job_order_line_ids:
+                sale_order_lines.append((0,0,{
+                        'product_id': line.product_id.id,
+                        'name':line.product_id.display_name,
+                        'product_uom_qty':line.quantity,
+                        'price_unit':line.product_unit_price,
+
+                    }))
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.customer_id.id,
+            'order_line': sale_order_lines,
+            'job_order_id' : self.id,
+            "vehicle_id": self.vehicle_id.id,
+        })
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Create Quotation',
+            'res_model': 'sale.order',
+            'view_mode': 'form',
+            'target' : 'current',
+            'res_id' : sale_order.id
+        }

@@ -11,5 +11,6 @@ class SaleOrder(models.Model):
     vehicle_id = fields.Many2one('vehicle.management', string="Vehicle")
 
     @api.onchange('job_order_id')
-    def _job_order_onchange(self):
+    def onchange_job_order_id(self):
+        '''finding vehicle for the job order'''
         self.vehicle_id = self.job_order_id.vehicle_id

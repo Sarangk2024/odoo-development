@@ -8,7 +8,6 @@
         <field name="arch" type="xml">
 
             <xpath expr="//group[@id='header_left_group']" position="inside">
-
                 <field name="job_order_id"/>
             </xpath>
         </field>
