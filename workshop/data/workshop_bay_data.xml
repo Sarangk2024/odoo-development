@@ -3,15 +3,19 @@
     <data noupdate="1">
         <record id="default_bay_type_data_washing_bay" model="workshop.bay">
             <field name="bay_name">Washing Bay</field>
+            <field name="job_type_ids" eval="[Command.link(ref('default_job_type_data_washing'))]"/>
         </record>
         <record id="default_bay_type_data_alignment_bay" model="workshop.bay">
             <field name="bay_name">Alignment Bay</field>
+            <field name="job_type_ids" eval="[Command.link(ref('default_job_type_data_alignment'))]"/>
         </record>
         <record id="default_bay_type_data_repair_bay" model="workshop.bay">
             <field name="bay_name">Repair Bay</field>
+            <field name="job_type_ids" eval="[Command.link(ref('default_job_type_data_repair'))]"/>
         </record>
         <record id="default_bay_type_data_paintiing_bay" model="workshop.bay">
             <field name="bay_name">Painting Bay</field>
+            <field name="job_type_ids" eval="[Command.link(ref('default_job_type_data_paintiing'))]"/>
         </record>
     </data>
 </odoo>

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
-from odoo.exceptions import UserError
-
+from odoo.exceptions import UserError, ValidationError
 
 
 class WorkshopJobOrder(models.Model):
@@ -40,17 +39,20 @@ class WorkshopJobOrder(models.Model):
         ('confirmed', 'Confirmed'),
         ('in_progress', 'In Progress'),
         ('done', 'Done'),
+        ('quotation', 'Quotation'),
         ('invoiced', 'Invoiced')
     ], default='draft', string="Job Order Status", tracking=True, readonly=True)
     total_amount = fields.Float(string="Total Amount",
                                 compute='_compute_total_amount', store=True)
     active = fields.Boolean(default=True)
-    # invoice_id = fields.Many2one('account.move', string="Invoice",
-    #                              readonly=True, copy=False)
+    invoice_ids = fields.Many2one('account.move', string="Invoice",
+                                 readonly=True, copy=False)
     job_type_id = fields.Many2one('job.type', help="Specify the job type")
     job_order_line_ids = fields.One2many('workshop.job.line',
                                          "job_order_line_id",
                                          string="Job Lines")
+    invoice_count = fields.Integer(compute='_compute_invoice_count', store=True)
+    quotation_count = fields.Integer(compute='_compute_quotation_count', store=True)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -64,6 +66,8 @@ class WorkshopJobOrder(models.Model):
     def action_confirm(self):
         ''' confirm work action. changing the state to confirmed  and checking if the order line is empty or not'''
         if self.job_order_line_ids:
+            if self.total_amount <= 0:
+                raise ValidationError('Total Amount must be greater than 0')
             self.state = 'confirmed'
         else:
             raise UserError('Job Order Lines cannot be Empty')
@@ -116,11 +120,6 @@ class WorkshopJobOrder(models.Model):
             record.total_amount = sum(
                 record.job_order_line_ids.mapped('line_subtotal'))
 
-    # def action_invoiced(self):
-    #     '''setting the job as done and change the bay availability'''
-    #     self.bay_id.bay_status = 'free'
-    #     self.state = 'invoiced'
-
     @api.onchange('job_date')
     def _onchange_job_date(self):
         """Validate date range and prevent  date from being earlier than today's date."""
@@ -135,16 +134,13 @@ class WorkshopJobOrder(models.Model):
             }
 
     def action_quotation(self):
-        '''setting the job as done and change the bay availability'''
+        '''quotataion logic for work order'''
+        self.state = 'quotation'
         for record in self:
             sale_order_lines=[]
             for line in record.job_order_line_ids:
                 sale_order_lines.append((0,0,{
                         'product_id': line.product_id.id,
-                        'name':line.product_id.display_name,
-                        'product_uom_qty':line.quantity,
-                        'price_unit':line.product_unit_price,
-
                     }))
         sale_order = self.env['sale.order'].create({
             'partner_id': self.customer_id.id,
@@ -161,3 +157,43 @@ class WorkshopJobOrder(models.Model):
             'target' : 'current',
             'res_id' : sale_order.id
         }
+
+    def action_invoiced(self):
+        '''invoice creation logic'''
+        self.bay_id.bay_status = 'free'
+        self.state = 'invoiced'
+        for record in self:
+            invoice_order_lines=[]
+            for line in record.job_order_line_ids:
+                invoice_order_lines.append((0,0,{
+                        'product_id': line.product_id.id
+                    }))
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.customer_id.id,
+            'invoice_origin': record.sequence,
+            'invoice_date': fields.Date.today(),
+            'job_order_id': self.id,
+            'invoice_line_ids': invoice_order_lines,
+            })
+        record.invoice_ids = invoice.id
+        record.state = 'invoiced'
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'res_id': invoice.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def action_view_invoice(self):
+        print("invoice click")
+
+    def action_view_quotation(self):
+        print("invoice click")
+
+    def _compute_invoice_count(self):
+            self.invoice_count = len(self.invoice_ids)
+    def _compute_quotation_count(self):
+        for record in self:
+            print(record , "quotation count")

@@ -14,3 +14,4 @@ class SaleOrder(models.Model):
     def onchange_job_order_id(self):
         '''finding vehicle for the job order'''
         self.vehicle_id = self.job_order_id.vehicle_id
+

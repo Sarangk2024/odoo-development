@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api
+from odoo.exceptions import ValidationError
 
 
 class WorkshopJobLine(models.Model):
@@ -15,7 +16,7 @@ class WorkshopJobLine(models.Model):
     product_id = fields.Many2one('product.product', string='Product Name',
                                  required=True)
     quantity = fields.Integer(string='Quantity', required=True, default=1)
-    product_unit_price = fields.Float(string='Unit Price', required=True, min=1)
+    product_unit_price = fields.Float(string='Unit Price', required=True)
     line_subtotal = fields.Float(string='Subtotal')
     job_order_line_id = fields.Many2one('workshop.job.order',
                                         string='Job Order')
