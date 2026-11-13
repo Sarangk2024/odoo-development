@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
+from odoo.fields import Command
 
 
 class WorkshopJobOrder(models.Model):
@@ -45,9 +46,12 @@ class WorkshopJobOrder(models.Model):
     total_amount = fields.Float(string="Total Amount",
                                 compute='_compute_total_amount', store=True)
     active = fields.Boolean(default=True)
-    invoice_ids = fields.One2many('account.move','job_order_id', string="Invoice",
-                                  readonly=True, domain=[('move_type','=','out_invoice')])
-    sale_order_ids = fields.One2many('sale.order','job_order_id',string="Sale Order")
+    invoice_ids = fields.One2many('account.move', 'job_order_id',
+                                  string="Invoice",
+                                  readonly=True,
+                                  domain=[('move_type', '=', 'out_invoice')])
+    sale_order_ids = fields.One2many('sale.order', 'job_order_id',
+                                     string="Sale Order")
     job_type_id = fields.Many2one('job.type', help="Specify the job type")
     job_order_line_ids = fields.One2many('workshop.job.line',
                                          "job_order_line_id",
@@ -109,11 +113,7 @@ class WorkshopJobOrder(models.Model):
     @api.onchange('job_type_id')
     def _onchange_job_type_id(self):
         '''resetting bay type and job type'''
-        if self.job_type_id:
-            self.bay_id = None
-        else:
-            self.bay_id = None
-            self.job_type_id = None
+        self.bay_id = None
 
     @api.depends('job_order_line_ids.line_subtotal')
     def _compute_total_amount(self):
@@ -137,12 +137,14 @@ class WorkshopJobOrder(models.Model):
     def action_quotation(self):
         '''quotation creation logic for work order'''
         self.state = 'quotation'
-        for record in self:
-            sale_order_lines = []
-            for line in record.job_order_line_ids:
-                sale_order_lines.append((0, 0, {
-                    'product_id': line.product_id.id,
-                }))
+        sale_order_lines = []
+        for line in self.job_order_line_ids:
+            sale_order_lines.append(
+                Command.create(
+                    {
+                        'product_id': line.product_id.id,
+                    }
+                ))
         sale_order = self.env['sale.order'].create({
             'partner_id': self.customer_id.id,
             'order_line': sale_order_lines,
@@ -150,6 +152,7 @@ class WorkshopJobOrder(models.Model):
             "vehicle_id": self.vehicle_id.id,
         })
         self.ensure_one()
+
         return {
             'type': 'ir.actions.act_window',
             'name': 'Create Quotation',
@@ -159,43 +162,62 @@ class WorkshopJobOrder(models.Model):
             'res_id': sale_order.id
         }
 
+
     def action_invoiced(self):
-        self.env['account.invoice']._create_invoices(self)
         '''invoice creation logic for work order'''
-        self.bay_id.bay_status = 'free'
-        self.state = 'invoiced'
-        for record in self:
-            invoice_order_lines = []
-            for line in record.job_order_line_ids:
-                invoice_order_lines.append((0, 0, {
-                    'product_id': line.product_id.id
-                }))
-        invoice = self.env['account.move'].create({
-            'move_type': 'out_invoice',
-            'partner_id': self.customer_id.id,
-            'invoice_date': fields.Date.today(),
-            'job_order_id': self.id,
-            'invoice_line_ids': invoice_order_lines,
-        })
-        self.ensure_one()
-        record.state = 'invoiced'
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'account.move',
-            'res_id': invoice.id,
-            'view_mode': 'form',
-            'target': 'current',
-        }
+        sale_order = self.env['sale.order'].search([
+            ('job_order_id', '=', self.id)
+        ])
+        if sale_order:
+            print("sale order have")
+            sale_order.action_confirm()
+            invoice = sale_order._create_invoices()
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'account.move',
+                'res_id': invoice.id,
+                'view_mode': 'form',
+                'target': 'current',
+            }
+
+        else:
+            sale_order_lines = []
+            for line in self.job_order_line_ids:
+                sale_order_lines.append(
+                    Command.create(
+                        {
+                            'product_id': line.product_id.id
+                        }
+                    ))
+            sale_order = self.env['sale.order'].create({
+                'partner_id': self.customer_id.id,
+                'job_order_id': self.id,
+                'order_line': sale_order_lines,
+            })
+            self.ensure_one()
+            sale_order.action_confirm()
+            invoice = sale_order._create_invoices()
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'account.move',
+                'res_id': invoice.id,
+                'view_mode': 'form',
+                'target': 'current',
+            }
 
     @api.depends('invoice_ids')
     def _compute_invoice_count(self):
         '''Finding invoice count for work order'''
-        self.invoice_count = len(self.invoice_ids)
+        for record in self:
+            record.invoice_count = len(record.invoice_ids)
+            if record.invoice_count > 0:
+                record.state='invoiced'
 
     @api.depends('sale_order_ids')
     def _compute_quotation_count(self):
         '''Finding quotation count for work order'''
-        self.quotation_count = len(self.sale_order_ids)
+        for record in self:
+            record.quotation_count = len(record.sale_order_ids)
 
     def action_view_invoice(self):
         '''show the invoice while clicking smart button'''
