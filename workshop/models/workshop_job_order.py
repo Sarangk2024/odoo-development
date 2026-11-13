@@ -27,7 +27,7 @@ class WorkshopJobOrder(models.Model):
                              tracking=True, required=True,
                              domain="[('job_type_ids','in',job_type_id)] if job_type_id else []")
     job_date = fields.Datetime(string="Job Date", required=True,
-                           default=fields.Datetime.now())
+                               default=fields.Datetime.now())
     customer_notes = fields.Text(string="Customer Notes",
                                  help="Customer's reported issue")
     image_id = fields.Many2many('ir.attachment', string="Vehicle Image")
@@ -45,14 +45,16 @@ class WorkshopJobOrder(models.Model):
     total_amount = fields.Float(string="Total Amount",
                                 compute='_compute_total_amount', store=True)
     active = fields.Boolean(default=True)
-    invoice_ids = fields.Many2one('account.move', string="Invoice",
-                                 readonly=True, copy=False)
+    invoice_ids = fields.One2many('account.move','job_order_id', string="Invoice",
+                                  readonly=True, domain=[('move_type','=','out_invoice')])
+    sale_order_ids = fields.One2many('sale.order','job_order_id',string="Sale Order")
     job_type_id = fields.Many2one('job.type', help="Specify the job type")
     job_order_line_ids = fields.One2many('workshop.job.line',
                                          "job_order_line_id",
                                          string="Job Lines")
     invoice_count = fields.Integer(compute='_compute_invoice_count', store=True)
-    quotation_count = fields.Integer(compute='_compute_quotation_count', store=True)
+    quotation_count = fields.Integer(compute='_compute_quotation_count',
+                                     store=True)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -116,9 +118,8 @@ class WorkshopJobOrder(models.Model):
     @api.depends('job_order_line_ids.line_subtotal')
     def _compute_total_amount(self):
         '''finding total amount from order lines'''
-        for record in self:
-            record.total_amount = sum(
-                record.job_order_line_ids.mapped('line_subtotal'))
+        self.total_amount = sum(
+            self.job_order_line_ids.mapped('line_subtotal'))
 
     @api.onchange('job_date')
     def _onchange_job_date(self):
@@ -134,18 +135,18 @@ class WorkshopJobOrder(models.Model):
             }
 
     def action_quotation(self):
-        '''quotataion logic for work order'''
+        '''quotation creation logic for work order'''
         self.state = 'quotation'
         for record in self:
-            sale_order_lines=[]
+            sale_order_lines = []
             for line in record.job_order_line_ids:
-                sale_order_lines.append((0,0,{
-                        'product_id': line.product_id.id,
-                    }))
+                sale_order_lines.append((0, 0, {
+                    'product_id': line.product_id.id,
+                }))
         sale_order = self.env['sale.order'].create({
             'partner_id': self.customer_id.id,
             'order_line': sale_order_lines,
-            'job_order_id' : self.id,
+            'job_order_id': self.id,
             "vehicle_id": self.vehicle_id.id,
         })
         self.ensure_one()
@@ -154,29 +155,29 @@ class WorkshopJobOrder(models.Model):
             'name': 'Create Quotation',
             'res_model': 'sale.order',
             'view_mode': 'form',
-            'target' : 'current',
-            'res_id' : sale_order.id
+            'target': 'current',
+            'res_id': sale_order.id
         }
 
     def action_invoiced(self):
-        '''invoice creation logic'''
+        self.env['account.invoice']._create_invoices(self)
+        '''invoice creation logic for work order'''
         self.bay_id.bay_status = 'free'
         self.state = 'invoiced'
         for record in self:
-            invoice_order_lines=[]
+            invoice_order_lines = []
             for line in record.job_order_line_ids:
-                invoice_order_lines.append((0,0,{
-                        'product_id': line.product_id.id
-                    }))
+                invoice_order_lines.append((0, 0, {
+                    'product_id': line.product_id.id
+                }))
         invoice = self.env['account.move'].create({
             'move_type': 'out_invoice',
             'partner_id': self.customer_id.id,
-            'invoice_origin': record.sequence,
             'invoice_date': fields.Date.today(),
             'job_order_id': self.id,
             'invoice_line_ids': invoice_order_lines,
-            })
-        record.invoice_ids = invoice.id
+        })
+        self.ensure_one()
         record.state = 'invoiced'
         return {
             'type': 'ir.actions.act_window',
@@ -186,14 +187,41 @@ class WorkshopJobOrder(models.Model):
             'target': 'current',
         }
 
+    @api.depends('invoice_ids')
+    def _compute_invoice_count(self):
+        '''Finding invoice count for work order'''
+        self.invoice_count = len(self.invoice_ids)
+
+    @api.depends('sale_order_ids')
+    def _compute_quotation_count(self):
+        '''Finding quotation count for work order'''
+        self.quotation_count = len(self.sale_order_ids)
+
     def action_view_invoice(self):
-        print("invoice click")
+        '''show the invoice while clicking smart button'''
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'name': ' Invoice',
+            'view_mode': 'list,form',
+            'target': 'current',
+            'domain': [
+                ('job_order_id', '=', self.id),
+                ('move_type', '=', 'out_invoice')
+            ]
+        }
 
     def action_view_quotation(self):
-        print("invoice click")
-
-    def _compute_invoice_count(self):
-            self.invoice_count = len(self.invoice_ids)
-    def _compute_quotation_count(self):
-        for record in self:
-            print(record , "quotation count")
+        '''show the quotation while clicking smart button'''
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.order',
+            'name': ' Quotations',
+            'view_mode': 'list,form',
+            'target': 'current',
+            'domain': [
+                ('job_order_id', '=', self.id)
+            ]
+        }

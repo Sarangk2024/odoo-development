@@ -33,13 +33,13 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_quotation" type="object"
                                 class="oe_stat_button" icon="edit_square"
-                                invisible="quotation_count == 1">
+                                invisible="quotation_count == 10">
                             <field name="quotation_count" widget="statinfo"
-                                   string="Delivery"/>
+                                   string="Quotations"/>
                         </button>
                         <button name="action_view_invoice" type="object"
                                 class="oe_stat_button" icon="edit_square"
-                                invisible="invoice_count == 1">
+                                invisible="invoice_count == 10">
                             <field name="invoice_count" widget="statinfo"
                                    string="Invoices"/>
                         </button>

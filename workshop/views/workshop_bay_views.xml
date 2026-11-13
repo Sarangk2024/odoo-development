@@ -10,6 +10,7 @@
                 <field name="assigned_employee_id"/>
                 <field name="bay_type"/>
                 <field name="bay_status"/>
+                <field name="job_type_ids" widget="many2many_tags"/>
             </list>
         </field>
     </record>

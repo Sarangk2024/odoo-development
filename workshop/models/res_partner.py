@@ -25,6 +25,6 @@ class ResPartner(models.Model):
             'type': 'ir.actions.act_window',
             'name': 'Vehicles View',
             'res_model': 'vehicle.management',
-            'view_mode': 'list,form',
+            'view_mode': 'list',
             'domain': [('owner_id', '=', self.id)]
         }
