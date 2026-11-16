@@ -2,6 +2,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
+from odoo.orm.decorators import ondelete
 
 
 class WorkshopJobOrder(models.Model):
@@ -53,12 +54,23 @@ class WorkshopJobOrder(models.Model):
     sale_order_ids = fields.One2many('sale.order', 'job_order_id',
                                      string="Sale Order")
     job_type_id = fields.Many2one('job.type', help="Specify the job type")
+    job_type_name = fields.Char(string="Job Type",compute="compute_job_type_name")
+    state_now = fields.Char(string="current state")
+    flag = fields.Boolean(string="Flag" ,default="True")
     job_order_line_ids = fields.One2many('workshop.job.line',
                                          "job_order_line_id",
                                          string="Job Lines")
-    invoice_count = fields.Integer(compute='_compute_invoice_count', store=True)
-    quotation_count = fields.Integer(compute='_compute_quotation_count',
-                                     store=True)
+    invoice_count = fields.Integer(compute='_compute_invoice_count')
+    quotation_count = fields.Integer(compute='_compute_quotation_count')
+
+    def compute_job_type_name(self):
+        '''create button invisibility conditions'''
+        self.job_type_name=self.job_type_id.job_type
+        self.state_now = self.state
+        if self.job_type_name == 'Washing' and self.state_now in['done','quotation'] and self.invoice_count==0:
+            self.flag=False
+        else:
+            self.flag=True
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -169,9 +181,13 @@ class WorkshopJobOrder(models.Model):
             ('job_order_id', '=', self.id)
         ])
         if sale_order:
-            print("sale order have")
-            sale_order.action_confirm()
-            invoice = sale_order._create_invoices()
+            if sale_order.state in {"sale"}:
+                print("inside iff")
+                invoice = sale_order._create_invoices()
+            else:
+                print("elseeeee")
+                sale_order.action_confirm()
+                invoice = sale_order._create_invoices()
             return {
                 'type': 'ir.actions.act_window',
                 'res_model': 'account.move',
