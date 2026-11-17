@@ -7,3 +7,6 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     job_order_id = fields.Many2one('workshop.job.order', string="Job Order")
+    company_id = fields.Many2one(
+        'res.company', required=True, default=lambda self: self.env.company
+    )

@@ -62,3 +62,6 @@
 <!--access_workshop_mechanic,workshop_model,workshop.bay,group_workshop_mechanic,r,-->
 <!--access_workshop_manager,workshop_model,workshop.bay,group_workshop_manager,crud,-->
 
+<!--access_res_partner,res_partner_model,res.partner,base.group_user,crud,-->
+<!--access_sale_order,sale_order_model,sale.order,base.group_user,crud,-->
+<!--access_account_move,account_move_model,account.move,base.group_user,crud,-->

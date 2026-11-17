@@ -53,7 +53,8 @@ class WorkshopJobOrder(models.Model):
     sale_order_ids = fields.One2many('sale.order', 'job_order_id',
                                      string="Sale Order")
     job_type_id = fields.Many2one('job.type', help="Specify the job type")
-    flag = fields.Boolean(string="Flag" ,default="True",compute="compute_job_type_name")
+    flag = fields.Boolean(string="Flag", default="True",
+                          compute="compute_job_type_name")
     job_order_line_ids = fields.One2many('workshop.job.line',
                                          "job_order_line_id",
                                          string="Job Lines")
@@ -61,11 +62,11 @@ class WorkshopJobOrder(models.Model):
     quotation_count = fields.Integer(compute='_compute_quotation_count')
 
     def compute_job_type_name(self):
-        '''create button invisibility conditions'''
-        if self.job_type_id.job_type == 'Washing' and self.state in['done','quotation'] and self.invoice_count==0:
-            self.flag=False
+        '''create invoice button invisibility conditions'''
+        if self.job_type_id.job_type == 'Washing' and self.state in ['done','quotation'] and self.invoice_count == 0:
+            self.flag = False
         else:
-            self.flag=True
+            self.flag = True
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -145,9 +146,11 @@ class WorkshopJobOrder(models.Model):
             }
 
     def action_quotation(self):
+        '''quotation creation logic'''
         self.ensure_one()
         '''quotation creation logic for work order'''
-        sale_order_lines = [Command.create({'product_id': line.product_id.id,}) for line in self.job_order_line_ids]
+        sale_order_lines = [Command.create({'product_id': line.product_id.id, })
+                            for line in self.job_order_line_ids]
         sale_order = self.env['sale.order'].create({
             'partner_id': self.customer_id.id,
             'order_line': sale_order_lines,
@@ -165,6 +168,7 @@ class WorkshopJobOrder(models.Model):
         }
 
     def action_invoiced(self):
+        '''invoice creation logic'''
         self.ensure_one()
         '''invoice creation logic for work order'''
         if self.sale_order_ids:
@@ -172,7 +176,9 @@ class WorkshopJobOrder(models.Model):
                 self.sale_order_ids.action_confirm()
             invoice = self.sale_order_ids._create_invoices()
         else:
-            sale_order_lines = [Command.create({'product_id': line.product_id.id}) for line in self.job_order_line_ids]
+            sale_order_lines = [
+                Command.create({'product_id': line.product_id.id}) for line in
+                self.job_order_line_ids]
             sale_order = self.env['sale.order'].create({
                 'partner_id': self.customer_id.id,
                 'job_order_id': self.id,
@@ -194,7 +200,7 @@ class WorkshopJobOrder(models.Model):
         for record in self:
             record.invoice_count = len(record.invoice_ids)
             if record.invoice_count > 0:
-                record.state='invoiced'
+                record.state = 'invoiced'
 
     @api.depends('sale_order_ids')
     def _compute_quotation_count(self):
@@ -234,5 +240,6 @@ class WorkshopJobOrder(models.Model):
     def unlink(self):
         '''prevent deleting work order that have quotation or invoice'''
         if self.sale_order_ids:
-            raise UserError("Cannot Delete Record it already have sale orders, Instead Archive Record")
+            raise UserError(
+                "Cannot Delete Record it already have sale orders, Instead Archive Record")
         return super().unlink()

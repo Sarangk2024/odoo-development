@@ -1,15 +1,13 @@
 id,name,model_id,group_id/id,operation,domain
 access_job_type,job_type_model,job.type,base.group_user,crud
 access_job_order_lines,job_order_lines_model,workshop.job.line,base.group_user,crud,
-access_res_partner,res_partner_model,res.partner,base.group_user,crud,
-access_sale_order,sale_order_model,sale.order,base.group_user,crud,
-access_account_move,account_move_model,account.move,base.group_user,crud,
-access_workshop_job_receptionist,workshop_job_model_receptionist,workshop.job.order,group_workshop_receptionist,cru,
-access_workshop_job_mechanic,workshop_job_model_mechanic,workshop.job.order,group_workshop_mechanic,cru,"[('mechanic_ids.id', 'in', user.id)]"
+access_workshop_job_receptionist,workshop_job_model_receptionist,workshop.job.order,group_workshop_receptionist,crud,
+access_workshop_job_mechanic,workshop_job_model_mechanic,workshop.job.order,group_workshop_mechanic,ru,"[('mechanic_ids.user_id', 'in', user.id)]"
 access_workshop_job_manager,workshop_job_model_manager,workshop.job.order,group_workshop_manager,crud,
 access_vehicle_receptionist,vehicle_model_receptionist,vehicle.management,group_workshop_receptionist,cru,
-access_vehicle_mechanic,vehicle_model_mechanic,vehicle.management,group_workshop_mechanic,r,""
+access_vehicle_mechanic,vehicle_model_mechanic,vehicle.management,group_workshop_mechanic,ru,""
 access_vehicle_manager,vehicle_model_manager,vehicle.management,group_workshop_manager,crud,
 access_workshop_receptionist,workshop_model_receptionist,workshop.bay,group_workshop_receptionist,ru,
-access_workshop_mechanic,workshop_model_mechanic,workshop.bay,group_workshop_mechanic,r,""
+access_workshop_mechanic,workshop_model_mechanic,workshop.bay,group_workshop_mechanic,ru,""
 access_workshop_manager,workshop_model_manager,workshop.bay,group_workshop_manager,crud,
+record_restricted_company_rule,Restricted Record: multi-company,record.restricted,,crud,"[('company_id', 'in', company_ids),]"
