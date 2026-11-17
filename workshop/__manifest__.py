@@ -14,6 +14,7 @@
     ],
 
     'data': [
+        'security/workshop_groups.xml',
         'security/ir.access.csv',
         'views/workshop_bay_views.xml',
         'views/vehicle_management_views.xml',

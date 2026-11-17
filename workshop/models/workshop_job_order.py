@@ -2,7 +2,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
-from odoo.orm.decorators import ondelete
 
 
 class WorkshopJobOrder(models.Model):
@@ -54,9 +53,7 @@ class WorkshopJobOrder(models.Model):
     sale_order_ids = fields.One2many('sale.order', 'job_order_id',
                                      string="Sale Order")
     job_type_id = fields.Many2one('job.type', help="Specify the job type")
-    job_type_name = fields.Char(string="Job Type",compute="compute_job_type_name")
-    state_now = fields.Char(string="current state")
-    flag = fields.Boolean(string="Flag" ,default="True")
+    flag = fields.Boolean(string="Flag" ,default="True",compute="compute_job_type_name")
     job_order_line_ids = fields.One2many('workshop.job.line',
                                          "job_order_line_id",
                                          string="Job Lines")
@@ -65,9 +62,7 @@ class WorkshopJobOrder(models.Model):
 
     def compute_job_type_name(self):
         '''create button invisibility conditions'''
-        self.job_type_name=self.job_type_id.job_type
-        self.state_now = self.state
-        if self.job_type_name == 'Washing' and self.state_now in['done','quotation'] and self.invoice_count==0:
+        if self.job_type_id.job_type == 'Washing' and self.state in['done','quotation'] and self.invoice_count==0:
             self.flag=False
         else:
             self.flag=True
@@ -84,6 +79,9 @@ class WorkshopJobOrder(models.Model):
     def action_confirm(self):
         ''' confirm work action. changing the state to confirmed  and checking if the order line is empty or not'''
         if self.job_order_line_ids:
+            print(self.mechanic_ids.user_id)
+            print(self.env.user)
+
             if self.total_amount <= 0:
                 raise ValidationError('Total Amount must be greater than 0')
             self.state = 'confirmed'
@@ -147,24 +145,16 @@ class WorkshopJobOrder(models.Model):
             }
 
     def action_quotation(self):
+        self.ensure_one()
         '''quotation creation logic for work order'''
-        self.state = 'quotation'
-        sale_order_lines = []
-        for line in self.job_order_line_ids:
-            sale_order_lines.append(
-                Command.create(
-                    {
-                        'product_id': line.product_id.id,
-                    }
-                ))
+        sale_order_lines = [Command.create({'product_id': line.product_id.id,}) for line in self.job_order_line_ids]
         sale_order = self.env['sale.order'].create({
             'partner_id': self.customer_id.id,
             'order_line': sale_order_lines,
             'job_order_id': self.id,
             "vehicle_id": self.vehicle_id.id,
         })
-        self.ensure_one()
-
+        self.state = 'quotation'
         return {
             'type': 'ir.actions.act_window',
             'name': 'Create Quotation',
@@ -174,52 +164,29 @@ class WorkshopJobOrder(models.Model):
             'res_id': sale_order.id
         }
 
-
     def action_invoiced(self):
+        self.ensure_one()
         '''invoice creation logic for work order'''
-        sale_order = self.env['sale.order'].search([
-            ('job_order_id', '=', self.id)
-        ])
-        if sale_order:
-            if sale_order.state in {"sale"}:
-                print("inside iff")
-                invoice = sale_order._create_invoices()
-            else:
-                print("elseeeee")
-                sale_order.action_confirm()
-                invoice = sale_order._create_invoices()
-            return {
-                'type': 'ir.actions.act_window',
-                'res_model': 'account.move',
-                'res_id': invoice.id,
-                'view_mode': 'form',
-                'target': 'current',
-            }
-
+        if self.sale_order_ids:
+            if self.sale_order_ids.state not in {"sale"}:
+                self.sale_order_ids.action_confirm()
+            invoice = self.sale_order_ids._create_invoices()
         else:
-            sale_order_lines = []
-            for line in self.job_order_line_ids:
-                sale_order_lines.append(
-                    Command.create(
-                        {
-                            'product_id': line.product_id.id
-                        }
-                    ))
+            sale_order_lines = [Command.create({'product_id': line.product_id.id}) for line in self.job_order_line_ids]
             sale_order = self.env['sale.order'].create({
                 'partner_id': self.customer_id.id,
                 'job_order_id': self.id,
                 'order_line': sale_order_lines,
             })
-            self.ensure_one()
             sale_order.action_confirm()
             invoice = sale_order._create_invoices()
-            return {
-                'type': 'ir.actions.act_window',
-                'res_model': 'account.move',
-                'res_id': invoice.id,
-                'view_mode': 'form',
-                'target': 'current',
-            }
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'res_id': invoice.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     @api.depends('invoice_ids')
     def _compute_invoice_count(self):
@@ -263,3 +230,9 @@ class WorkshopJobOrder(models.Model):
                 ('job_order_id', '=', self.id)
             ]
         }
+
+    def unlink(self):
+        '''prevent deleting work order that have quotation or invoice'''
+        if self.sale_order_ids:
+            raise UserError("Cannot Delete Record it already have sale orders, Instead Archive Record")
+        return super().unlink()

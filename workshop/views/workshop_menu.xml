@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
-        <menuitem id="workshop_root_menu" name="Workshop">
+        <menuitem id="workshop_root_menu" name="Workshop"
+                  web_icon="workshop,static/description/icon.png">
             <menuitem id="vehicle_menu" name="Vehicle"
                       action="vehicle_management_action"/>
             <menuitem id="work_job_order_menu" name="Work Order"

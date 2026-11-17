@@ -15,10 +15,10 @@
                             invisible="state not in ['confirmed','in_progress']"/>
                     <button name="action_start" type="object" string="Start"
                             class="btn-primary"
-                            invisible="state !='confirmed'"/>
+                            invisible="state !='confirmed'" groups="group_workshop_mechanic"/>
                     <button name="action_done" type="object" string="Done"
                             class="btn-primary"
-                            invisible="state !='in_progress'"/>
+                            invisible="state !='in_progress'" groups="group_workshop_mechanic"/>
                     <button name="action_quotation" type="object"
                             string="Create Quotation" class="btn-primary"
                             invisible="state not in ['done']"/>
@@ -55,7 +55,6 @@
                         <group string="Customer Details">
                             <field name="customer_id"
                                    readonly="state!='draft'"/>
-                            <field name="job_type_name" invisible="True"/>
                             <field name="phone_number"/>
                             <field name="vehicle_id" readonly="state!='draft'"/>
                             <field name="mechanic_ids" widget="many2many_tags"/>
@@ -119,7 +118,7 @@
                 <field name="sequence"/>
                 <field name="customer_id"/>
                 <field name="vehicle_id"/>
-                <field name="mechanic_ids"/>
+                <field name="mechanic_ids" widget="many2many_tags"/>
                 <field name="bay_id"/>
                 <field name="job_date"/>
                 <field name="warranty_status"/>
@@ -158,7 +157,7 @@
     <record id="workshop_job_order_action" model="ir.actions.act_window">
         <field name="name">Work Order</field>
         <field name="res_model">workshop.job.order</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">list,form,kanban,pivot,graph</field>
     </record>
 
 </odoo>
