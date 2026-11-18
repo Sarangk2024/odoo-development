@@ -8,10 +8,14 @@
             <menuitem id="work_job_order_menu" name="Work Order"
                       action="workshop_job_order_action"
                       sequence="1"/>
-            <menuitem id="job_type_menu" name="Configuration">
-                <menuitem id="configuration_first_level_job_type"
+            <menuitem id="workshop_report_menu" name="Report"
+                      action="workshop_report_action"
+                      sequence="3"/>
+
+            <menuitem id="workshop_configurataion_menu" name="Configuration">
+                <menuitem id="workshop_configuration_job_type"
                           name="Job Type" action="job_type_action"/>
-                <menuitem id="workshop_bay_menu"
+                <menuitem id="workshop_configuration_bay_menu"
                           name="Bay Management"
                           action="workshop_bay_action"/>
             </menuitem>

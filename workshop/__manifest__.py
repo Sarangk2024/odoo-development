@@ -23,6 +23,7 @@
         'views/res_partner_views.xml',
         'views/sale_order_views.xml',
         'views/account_move_views.xml',
+        'views/workshop_report.xml',
         'data/job_type_data.xml',
         'data/workshop_bay_data.xml',
         'data/sequence_data.xml',

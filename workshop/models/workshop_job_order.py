@@ -60,10 +60,14 @@ class WorkshopJobOrder(models.Model):
                                          string="Job Lines")
     invoice_count = fields.Integer(compute='_compute_invoice_count')
     quotation_count = fields.Integer(compute='_compute_quotation_count')
+    company_id = fields.Many2one(
+        'res.company', default=lambda self: self.env.company
+    )
 
     def compute_job_type_name(self):
         '''create invoice button invisibility conditions'''
-        if self.job_type_id.job_type == 'Washing' and self.state in ['done','quotation'] and self.invoice_count == 0:
+        if self.job_type_id.job_type == 'Washing' and self.state in ['done',
+                                                                     'quotation'] and self.invoice_count == 0:
             self.flag = False
         else:
             self.flag = True
@@ -80,9 +84,6 @@ class WorkshopJobOrder(models.Model):
     def action_confirm(self):
         ''' confirm work action. changing the state to confirmed  and checking if the order line is empty or not'''
         if self.job_order_line_ids:
-            print(self.mechanic_ids.user_id)
-            print(self.env.user)
-
             if self.total_amount <= 0:
                 raise ValidationError('Total Amount must be greater than 0')
             self.state = 'confirmed'

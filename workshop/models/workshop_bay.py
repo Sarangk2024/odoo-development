@@ -36,6 +36,9 @@ class WorkshopBay(models.Model):
                                       domain=[('state', '=', 'in_progress')])
     job_type_ids = fields.Many2many('job.type', string='Job Type',
                                     required=True)
+    company_id = fields.Many2one(
+        'res.company', required=True, default=lambda self: self.env.company
+    )
 
     def action_submit(self):
         '''submit button action. change the  bay status to occupied'''

@@ -19,6 +19,9 @@ class WorkshopJobLine(models.Model):
     line_subtotal = fields.Float(string='Subtotal')
     job_order_line_id = fields.Many2one('workshop.job.order',
                                         string='Job Order')
+    company_id = fields.Many2one(
+        'res.company', required=True, default=lambda self: self.env.company
+    )
 
     @api.onchange('product_id')
     def _onchange_product_id(self):

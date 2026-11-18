@@ -31,3 +31,6 @@ class VehicleManagement(models.Model):
                                tracking=True)
     job_order_ids = fields.One2many('workshop.job.order', 'vehicle_id',
                                     string='Vehicle', required=True)
+    company_id = fields.Many2one(
+        'res.company', required=True, default=lambda self: self.env.company
+    )

@@ -12,3 +12,6 @@ class JobType(models.Model):
 
     job_type = fields.Char(string="Job Type",
                            help='Give me the job type of the workshop')
+    company_id = fields.Many2one(
+        'res.company', required=True, default=lambda self: self.env.company
+    )

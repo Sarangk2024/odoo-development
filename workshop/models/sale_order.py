@@ -9,6 +9,9 @@ class SaleOrder(models.Model):
 
     job_order_id = fields.Many2one('workshop.job.order', string="Job Order")
     vehicle_id = fields.Many2one('vehicle.management', string="Vehicle")
+    company_id = fields.Many2one(
+        'res.company', required=True, default=lambda self: self.env.company
+    )
 
     @api.onchange('job_order_id')
     def onchange_job_order_id(self):

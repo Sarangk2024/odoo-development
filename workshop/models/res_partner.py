@@ -11,10 +11,13 @@ class ResPartner(models.Model):
                                   string='Vehicles')
     vehicle_count = fields.Integer(string='Vehicles',
                                    compute='_compute_vehicle_count', store=True)
+    company_id = fields.Many2one(
+        'res.company', required=True, default=lambda self: self.env.company
+    )
 
     @api.depends('vehicle_ids')
     def _compute_vehicle_count(self):
-        '''finding customer vehicle count'''
+        '''finding customer's vehicle count'''
         for record in self:
             record.vehicle_count = len(record.vehicle_ids)
 
