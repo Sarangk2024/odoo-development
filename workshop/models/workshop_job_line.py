@@ -16,6 +16,7 @@ class WorkshopJobLine(models.Model):
                                  required=True)
     quantity = fields.Integer(string='Quantity', required=True, default=1)
     product_unit_price = fields.Float(string='Unit Price', required=True)
+    currency_id = fields.Many2one(comodel_name='res.currency', string="Currency", default=lambda self: self.env.company.currency_id)
     line_subtotal = fields.Float(string='Subtotal')
     job_order_line_id = fields.Many2one('workshop.job.order',
                                         string='Job Order')

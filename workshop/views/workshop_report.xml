@@ -67,10 +67,11 @@
         <field name="model">workshop.job.order</field>
         <field name="arch" type="xml">
             <pivot string="Workshop Job Order" sample="1">
-                <field name="customer_id" type="measure"/>
-                <field name="mechanic_ids" type="col"/>
-                <field name="job_date" interval="day" type="col"/>
+                <field name="mechanic_ids" type="row"/>
                 <field name="state" type="col"/>
+                <field name="customer_id" type="col"/>
+                <field name="job_date" interval="month" type="row"/>
+                <field name="vehicle_id" type="row"/>
                 <field name="total_amount" type="measure"/>
             </pivot>
         </field>
@@ -81,12 +82,10 @@
         <field name="name">workshop.job.order.view.graph</field>
         <field name="model">workshop.job.order</field>
         <field name="arch" type="xml">
-            <graph string="Workshop Job Order" type="line" sample="1">
-                <field name="customer_id" type="measure"/>
+            <graph string="Workshop Job Order" type="pie" sample="1">
                 <field name="mechanic_ids"/>
                 <field name="job_date"/>
                 <field name="state"/>
-                <field name="total_amount" type="measure"/>
             </graph>
         </field>
     </record>

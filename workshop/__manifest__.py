@@ -11,6 +11,7 @@
         'hr',
         'sale',
         'account',
+        'base_automation'
     ],
 
     'data': [
@@ -27,6 +28,9 @@
         'data/job_type_data.xml',
         'data/workshop_bay_data.xml',
         'data/sequence_data.xml',
+        'data/template/workshop_mail_template.xml',
+        'data/workshop_server_action.xml',
+        'wizard/workshop_job_cancel_view.xml',
         'views/workshop_menu.xml',
     ],
 

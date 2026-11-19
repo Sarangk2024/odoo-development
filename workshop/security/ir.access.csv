@@ -12,3 +12,4 @@ access_workshop_mechanic,workshop_model_mechanic,workshop.bay,group_workshop_mec
 access_workshop_manager,workshop_model_manager,workshop.bay,group_workshop_manager,crud,
 access_workshop_job_order_multi_company,workshop_job_order_model_multi_company,workshop.job.order,,crud,"['|',('company_id', 'in', company_ids),('company_id','=',False)]"
 access_vehicle_management_multi_company,vehicle_management_model_multi_company,vehicle.management,,crud,"[('company_id', 'in', company_ids)]"
+access_workshop_cancel_job,workshop_cancel_job_model,workshop.job.cancel,base.group_user,crud

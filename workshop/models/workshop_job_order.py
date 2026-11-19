@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from dateutil.relativedelta import relativedelta
+
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
@@ -43,7 +45,8 @@ class WorkshopJobOrder(models.Model):
         ('quotation', 'Quotation'),
         ('invoiced', 'Invoiced')
     ], default='draft', string="Job Order Status", tracking=True, readonly=True)
-    total_amount = fields.Float(string="Total Amount",
+    currency_id = fields.Many2one(comodel_name='res.currency', string="Currency", default=lambda self: self.env.company.currency_id)
+    total_amount = fields.Monetary(string="Total Amount",
                                 compute='_compute_total_amount', store=True)
     active = fields.Boolean(default=True)
     invoice_ids = fields.One2many('account.move', 'job_order_id',
@@ -63,6 +66,8 @@ class WorkshopJobOrder(models.Model):
     company_id = fields.Many2one(
         'res.company', default=lambda self: self.env.company
     )
+    is_schedule_activity = fields.Boolean(string="Activity Status",
+                                          default=False)
 
     def compute_job_type_name(self):
         '''create invoice button invisibility conditions'''
@@ -94,6 +99,21 @@ class WorkshopJobOrder(models.Model):
         '''cancel work action. changing the state to canceled and updating the ongoing job status'''
         self.state = 'draft'
         self.bay_id.bay_status = 'free'
+        self.ensure_one()
+        return{
+            'type': 'ir.actions.act_window',
+            'name': 'Workshop Job Cancel',
+            'res_model': 'workshop.job.cancel',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'target': 'new',
+            'context': {
+                'default_sequence':self.sequence,
+                'default_vin':self.vehicle_id.vin,
+                'default_model':self.vehicle_id.model,
+                'default_year':self.vehicle_id.year
+            }
+        }
 
     def action_start(self):
         '''start button function set the bay status to occupied and set the ongoing job and bay availability check'''
@@ -244,3 +264,29 @@ class WorkshopJobOrder(models.Model):
             raise UserError(
                 "Cannot Delete Record it already have sale orders, Instead Archive Record")
         return super().unlink()
+
+    def action_automate(self):
+        '''setting the job as done and change the bay availability'''
+
+        print("hhhhhhhhhhhhhhhhhhhhh")
+        for record in self:
+            if record.state == 'done':
+                continue
+
+            if self.bay_id.ongoing_job_ids == self:
+                self.bay_id.bay_status = 'free'
+            self.state = 'done'
+
+            if not record.is_schedule_activity:
+                record.activity_schedule(
+                    act_type_xmlid='mail.mail_activity_data_call',
+                    date_deadline=fields.Date.today() + relativedelta(days=1),
+                    user_id=self.env.user.id, summary='Test Activity Move')
+                record.is_schedule_activity=True
+
+            if record.customer_id.email:
+                email_template = self.env.ref('workshop.email_template_workshop_job_order')
+                email_values = {'email_to': record.customer_id.email}
+                email_template.send_mail(
+                    record.id,
+                    force_send=True,email_values=email_values)
