@@ -30,7 +30,7 @@ class WorkshopJobOrder(models.Model):
                              tracking=True, required=True,
                              domain="[('job_type_ids','in',job_type_id)] if job_type_id else []")
     job_date = fields.Datetime(string="Job Date", required=True,
-                               default=fields.Datetime.now())
+                               default=fields.Datetime.now)
     customer_notes = fields.Text(string="Customer Notes",
                                  help="Customer's reported issue")
     image_id = fields.Many2many('ir.attachment', string="Vehicle Image")
@@ -68,6 +68,8 @@ class WorkshopJobOrder(models.Model):
     )
     is_schedule_activity = fields.Boolean(string="Activity Status",
                                           default=False)
+    appointment_id = fields.Many2one('calendar.event',string="Appointments")
+    appointment_count = fields.Integer(string="Appointment Count",compute="_compute_appointment_count")
 
     def compute_job_type_name(self):
         '''create invoice button invisibility conditions'''
@@ -267,16 +269,7 @@ class WorkshopJobOrder(models.Model):
 
     def action_automate(self):
         '''setting the job as done and change the bay availability'''
-
-        print("hhhhhhhhhhhhhhhhhhhhh")
         for record in self:
-            if record.state == 'done':
-                continue
-
-            if self.bay_id.ongoing_job_ids == self:
-                self.bay_id.bay_status = 'free'
-            self.state = 'done'
-
             if not record.is_schedule_activity:
                 record.activity_schedule(
                     act_type_xmlid='mail.mail_activity_data_call',
@@ -290,3 +283,23 @@ class WorkshopJobOrder(models.Model):
                 email_template.send_mail(
                     record.id,
                     force_send=True,email_values=email_values)
+
+    @api.depends('appointment_count')
+    def _compute_appointment_count(self):
+        '''finding customer's appointment count'''
+        for record in self:
+            record.appointment_count = len(record.appointment_id)
+
+    def action_view_appointment(self):
+        '''show the appointment while clicking smart button'''
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'calendar.event',
+            'name': ' Appointment',
+            'view_mode': 'list,form',
+            'target': 'current',
+            'domain': [
+                ('sequence', '=', self.id)
+            ]
+        }

@@ -18,6 +18,29 @@
                 </div>
             </xpath>
 
+            <xpath expr="//button[@name='action_view_vehicles']"
+                   position="after">
+                <div class="oe_button_box" name="button_box">
+                    <button class="oe_stat_button"
+                            type="object" icon="work"
+                            name="action_view_appointments">
+                        <field name="appointment_count" widget="statinfo"
+                               string="Appointment's"/>
+                    </button>
+                </div>
+            </xpath>
+            <xpath expr="//button[@name='action_view_appointments']"
+                   position="after">
+                <div class="oe_button_box" name="button_box">
+                    <button class="oe_stat_button"
+                            type="object" icon="business"
+                            name="action_view_work_orders">
+                        <field name="work_order_count" widget="statinfo"
+                               string="Work Order's"/>
+                    </button>
+                </div>
+            </xpath>
+
             <xpath expr="//notebook" position="inside">
                 <page string="Vehicles">
                     <field name="vehicle_ids">

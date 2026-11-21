@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class VehicleManagement(models.Model):
@@ -34,3 +34,41 @@ class VehicleManagement(models.Model):
     company_id = fields.Many2one(
         'res.company', required=True, default=lambda self: self.env.company
     )
+    history_count = fields.Integer(string='History Count', compute='_compute_history_count')
+    appointment_count = fields.Integer(string='Appointment Count',compute='_compute_appointment_count')
+    appointment_ids = fields.One2many('calendar.event','vehicle_id',string="Appointment")
+
+
+    def action_view_vehicle_history(self):
+        '''To show the Appointments list view when user click the Appointment smart button'''
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'History',
+            'res_model': 'workshop.job.order',
+            'view_mode': 'list,form',
+            'domain': [('vehicle_id', 'in', self.id)]
+        }
+
+    @api.depends('history_count')
+    def _compute_history_count(self):
+        '''finding customer's appointment count'''
+        for record in self:
+            record.history_count = len(record.job_order_ids)
+
+    @api.depends('appointment_count')
+    def _compute_appointment_count(self):
+        '''finding customer's appointment count'''
+        for record in self:
+            record.appointment_count = len(record.appointment_ids)
+
+    def action_view_appointments(self):
+        '''To show the Appointments list view when user click the Appointment smart button'''
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Appointment View',
+            'res_model': 'calendar.event',
+            'view_mode': 'list,form',
+            'domain': [('vehicle_id', '=', self.id)]
+        }

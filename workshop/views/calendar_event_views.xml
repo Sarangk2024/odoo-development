@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="Big5" ?>
+<odoo>
+
+    <!--    inherited calendar.event  view  -->
+    <record id="calendar_event_form_view" model="ir.ui.view">
+        <field name="name">calendar.event.model.form</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='stop']" position="after">
+                <field name="sequence"/>
+                <field name="customer_id"/>
+                <field name="vehicle_id"></field>
+                <field name="job_type_id"></field>
+            </xpath>
+
+            <xpath expr="//button[@name='action_open_composer']"
+                   position="after">
+                <button name="action_confirm" type="object"
+                        string="Confirm" class="btn-primary"
+                        invisible="state !='draft'"/>
+
+                <button name="action_cancel" type="object"
+                        string="Cancel" class="btn-primary"
+                        invisible="state in ['draft','work_order']"/>
+
+                <button name="action_create" type="object"
+                        string="Create Work Order" class="btn-primary"
+                        invisible="state in ['draft','work_order']"/>
+                <field name="state" widget="statusbar"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="calendar_event_quick_create_form_view" model="ir.ui.view">
+        <field name="name">calendar.event.model.form</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id"
+               ref="calendar.view_calendar_event_form_quick_create"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='start']" position="after">
+                <group>
+                    <field name="customer_id"/>
+                    <field name="vehicle_id"></field>
+                    <field name="job_type_id"></field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!--    workshop appointment model action   -->
+    <record id="workshop_appointmen_action" model="ir.actions.act_window">
+        <field name="name">Workshop Appointment</field>
+        <field name="res_model">calendar.event</field>
+        <field name="view_mode">calendar,list,form</field>
+    </record>
+</odoo>

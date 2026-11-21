@@ -8,6 +8,9 @@
             <menuitem id="work_job_order_menu" name="Work Order"
                       action="workshop_job_order_action"
                       sequence="1"/>
+            <menuitem id="workshop_appointment_menu" name="Appointment"
+                      action="workshop_appointmen_action"
+                      sequence="2"/>
             <menuitem id="workshop_report_menu" name="Report"
                       action="workshop_report_action"
                       sequence="3"/>

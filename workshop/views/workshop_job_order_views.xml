@@ -35,6 +35,13 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="action_view_appointment" type="object"
+                                class="oe_stat_button" icon="history"
+                                invisible="appointment_count == 0">
+
+                            <field name="appointment_count" widget="statinfo"
+                                   string="Appointment"/>
+                        </button>
                         <button name="action_view_quotation" type="object"
                                 class="oe_stat_button" icon="edit_square"
                                 invisible="quotation_count == 0">
@@ -62,6 +69,7 @@
                             <field name="phone_number"/>
                             <field name="vehicle_id" readonly="state!='draft'"/>
                             <field name="mechanic_ids" widget="many2many_tags"/>
+                            <field name="appointment_id"/>
                         </group>
                         <group string="Work Details">
                             <field name="job_type_id"
@@ -84,8 +92,9 @@
                                     <list editable="bottom">
                                         <field name="product_id"/>
                                         <field name="quantity"/>
-                                        <field name="product_unit_price" />
-                                        <field name="line_subtotal" widget="Monetary"/>
+                                        <field name="product_unit_price"/>
+                                        <field name="line_subtotal"
+                                               widget="Monetary"/>
                                     </list>
                                 </field>
 

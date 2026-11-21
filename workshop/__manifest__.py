@@ -11,7 +11,8 @@
         'hr',
         'sale',
         'account',
-        'base_automation'
+        'base_automation',
+        'calendar',
     ],
 
     'data': [
@@ -25,6 +26,7 @@
         'views/sale_order_views.xml',
         'views/account_move_views.xml',
         'views/workshop_report.xml',
+        'views/calendar_event_views.xml',
         'data/job_type_data.xml',
         'data/workshop_bay_data.xml',
         'data/sequence_data.xml',
