@@ -43,7 +43,8 @@ class WorkshopJobOrder(models.Model):
         ('in_progress', 'In Progress'),
         ('done', 'Done'),
         ('quotation', 'Quotation'),
-        ('invoiced', 'Invoiced')
+        ('invoiced', 'Invoiced'),
+        ('delivered', 'Delivered'),
     ], default='draft', string="Job Order Status", tracking=True, readonly=True)
     currency_id = fields.Many2one(comodel_name='res.currency', string="Currency", default=lambda self: self.env.company.currency_id)
     total_amount = fields.Monetary(string="Total Amount",
@@ -132,6 +133,10 @@ class WorkshopJobOrder(models.Model):
             self.bay_id.bay_status = 'free'
         self.state = 'done'
 
+    def action_delivered(self):
+        '''delivery logic'''
+        self.state = 'delivered'
+
     @api.onchange('customer_id')
     def _onchange_customer_id(self):
         '''getting phone number of the selected customer and there vehicles'''
@@ -209,6 +214,7 @@ class WorkshopJobOrder(models.Model):
             })
             sale_order.action_confirm()
             invoice = sale_order._create_invoices()
+
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
@@ -222,8 +228,6 @@ class WorkshopJobOrder(models.Model):
         '''Finding invoice count for work order'''
         for record in self:
             record.invoice_count = len(record.invoice_ids)
-            if record.invoice_count > 0:
-                record.state = 'invoiced'
 
     @api.depends('sale_order_ids')
     def _compute_quotation_count(self):
@@ -267,7 +271,7 @@ class WorkshopJobOrder(models.Model):
                 "Cannot Delete Record it already have sale orders, Instead Archive Record")
         return super().unlink()
 
-    def action_automate(self):
+    def action_automate_work_order(self):
         '''setting the job as done and change the bay availability'''
         for record in self:
             if not record.is_schedule_activity:
@@ -300,6 +304,6 @@ class WorkshopJobOrder(models.Model):
             'view_mode': 'list,form',
             'target': 'current',
             'domain': [
-                ('sequence', '=', self.id)
+                ('work_order_ids', '=', self.id)
             ]
         }

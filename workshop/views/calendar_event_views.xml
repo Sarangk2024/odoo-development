@@ -12,6 +12,8 @@
                 <field name="customer_id"/>
                 <field name="vehicle_id"></field>
                 <field name="job_type_id"></field>
+                <field name="work_order_ids" widget="many2many_tags"/>
+
             </xpath>
 
             <xpath expr="//button[@name='action_open_composer']"

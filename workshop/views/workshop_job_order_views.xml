@@ -29,9 +29,13 @@
                             string="Create Invoice" class="btn-primary"
                             invisible="flag"
                             groups="workshop.group_workshop_receptionist,workshop.group_workshop_manager"/>
+                    <button name="action_delivered" type="object"
+                            string="Deliver" class="btn-primary"
+                            invisible="state != 'invoiced'"
+                            groups="workshop.group_workshop_receptionist,workshop.group_workshop_manager"/>
 
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,confirmed,in_progress,done,invoiced"/>
+                           statusbar_visible="draft,confirmed,in_progress,done,invoiced,delivered"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

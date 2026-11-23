@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="email_template_workshop_appointment_reminder" model="mail.template">
+            <field name="name">Appointment Reminder</field>
+            <field name="model_id" ref="workshop.model_calendar_event"/>
+            <field name="email_from">{{ object.company_id.email}}</field>
+            <field name="subject">Appointment Reminder: {{ object.sequence}}
+            </field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px; font-size: 13px;">
+                    <p>
+                        Dear <t t-out="object.customer_id.name"/>,
+                        <br/>
+                        <br/>
+                        Your Appointment for job order
+                        <strong>
+                            <t t-out="object.job_type_id.job_type"/>
+                        </strong>
+                        has been scheduled for tomorrow. Please bring the vehicle and be there on time.!
+                        <br/>
+                        Appointment details:<br/>
+                        <strong>
+                            sequence: <t t-out="object.sequence"/> <br/>
+                            Name: <t t-out="object.customer_id.name"/> <br/>
+                            Vehicle: <t t-out="object.vehicle_id.license_plate"/> <br/>
+                            Job Type: <t t-out="object.job_type_id.job_type"/> <br/>
+                            Time: <t t-out="object.start"/> TO <t t-out="object.stop"/> <br/>
+                            Duration: <t t-out="object.duration"/> hrs<br/>
+                            Location: <t t-out="object.location"/> <br/>
+                        </strong>
+
+                    </p>
+                    <p>
+                        Regards,
+                        <br/>
+                        <t t-out="object.company_id.name or ''"/>
+                    </p>
+                </div>
+            </field>
+        </record>
+    </data>
+</odoo>

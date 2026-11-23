@@ -28,4 +28,5 @@ class SaleOrder(models.Model):
         sale_order_invoices.write({
             'job_order_id': self.job_order_id.id,
         })
+
         return invoices

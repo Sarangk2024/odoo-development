@@ -9,7 +9,7 @@
                    ref="workshop.model_workshop_job_order"/>
             <field name="state">code</field>
             <field name="code">
-                records.action_automate()
+                records.action_automate_work_order()
             </field>
         </record>
 
@@ -21,6 +21,29 @@
             <field name="filter_domain">[('state', '=', 'done')]</field>
             <field name="action_server_ids"
                    eval="[(4, ref('workshop_job_order_server_action'))]"/>
+        </record>
+    </data>
+    <data noupdate="1">
+        <record id="workshop_appointment_server_action"
+                model="ir.actions.server">
+            <field name="name">Appointment</field>
+            <field name="model_id" ref="workshop.model_calendar_event"/>
+            <field name="binding_model_id"
+                   ref="workshop.model_calendar_event"/>
+            <field name="state">code</field>
+            <field name="code">
+                records.action_automate_work_appointment()
+            </field>
+        </record>
+
+        <record id="automated_action_send_email_on_appointment_confirm"
+                model="base.automation">
+            <field name="name">Send Mail</field>
+            <field name="model_id" ref="workshop.model_calendar_event"/>
+            <field name="trigger">on_write</field>
+            <field name="filter_domain">[('state', '=', 'confirmed')]</field>
+            <field name="action_server_ids"
+                   eval="[(4, ref('workshop_appointment_server_action'))]"/>
         </record>
     </data>
 
