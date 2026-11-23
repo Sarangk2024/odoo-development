@@ -34,10 +34,12 @@ class VehicleManagement(models.Model):
     company_id = fields.Many2one(
         'res.company', required=True, default=lambda self: self.env.company
     )
-    history_count = fields.Integer(string='History Count', compute='_compute_history_count')
-    appointment_count = fields.Integer(string='Appointment Count',compute='_compute_appointment_count')
-    appointment_ids = fields.One2many('calendar.event','vehicle_id',string="Appointment")
-
+    history_count = fields.Integer(string='History Count',
+                                   compute='_compute_history_count')
+    appointment_count = fields.Integer(string='Appointment Count',
+                                       compute='_compute_appointment_count')
+    appointment_ids = fields.One2many('calendar.event', 'vehicle_id',
+                                      string="Appointment")
 
     def action_view_vehicle_history(self):
         '''To show the Appointments list view when user click the Appointment smart button'''

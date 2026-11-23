@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models
 
 
 class ResPartner(models.Model):
@@ -11,10 +11,13 @@ class ResPartner(models.Model):
     vehicle_count = fields.Integer(string='Vehicles',
                                    compute='_compute_vehicle_count')
 
-    appointment_ids = fields.One2many('calendar.event','customer_id',string="Appointment")
-    appointment_count = fields.Integer(string='Appointment',compute='_compute_appointment_count')
+    appointment_ids = fields.One2many('calendar.event', 'customer_id',
+                                      string="Appointment")
+    appointment_count = fields.Integer(string='Appointment',
+                                       compute='_compute_appointment_count')
     work_orders_ids = fields.One2many('workshop.job.order', 'customer_id')
-    work_order_count = fields.Integer(string="Work Order",compute='_compute_work_order_count')
+    work_order_count = fields.Integer(string="Work Order",
+                                      compute='_compute_work_order_count')
 
     company_id = fields.Many2one(
         'res.company', required=True, default=lambda self: self.env.company

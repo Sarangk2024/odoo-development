@@ -45,7 +45,8 @@ class WorkshopBay(models.Model):
         self.bay_status = 'occupied'
 
     def action_cancel(self):
-        '''cancel button action. change the  bay status to free and check if the order can be canceled '''
+        '''cancel button action. change the  bay status to free and
+        check if the order can be canceled '''
         if "in_progress" in self.ongoing_job_ids.mapped("state"):
             raise UserError("This Bay Already In Progress Job")
         self.bay_status = 'free'

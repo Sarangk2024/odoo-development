@@ -46,9 +46,11 @@ class WorkshopJobOrder(models.Model):
         ('invoiced', 'Invoiced'),
         ('delivered', 'Delivered'),
     ], default='draft', string="Job Order Status", tracking=True, readonly=True)
-    currency_id = fields.Many2one(comodel_name='res.currency', string="Currency", default=lambda self: self.env.company.currency_id)
+    currency_id = fields.Many2one(comodel_name='res.currency',
+                                  string="Currency", default=lambda
+            self: self.env.company.currency_id)
     total_amount = fields.Monetary(string="Total Amount",
-                                compute='_compute_total_amount', store=True)
+                                   compute='_compute_total_amount', store=True)
     active = fields.Boolean(default=True)
     invoice_ids = fields.One2many('account.move', 'job_order_id',
                                   string="Invoice",
@@ -69,8 +71,10 @@ class WorkshopJobOrder(models.Model):
     )
     is_schedule_activity = fields.Boolean(string="Activity Status",
                                           default=False)
-    appointment_id = fields.Many2one('calendar.event',string="Appointments")
-    appointment_count = fields.Integer(string="Appointment Count",compute="_compute_appointment_count")
+    appointment_id = fields.Many2one('calendar.event', string="Appointments",
+                                     ondelete="cascade")
+    appointment_count = fields.Integer(string="Appointment Count",
+                                       compute="_compute_appointment_count")
 
     def compute_job_type_name(self):
         '''create invoice button invisibility conditions'''
@@ -90,7 +94,8 @@ class WorkshopJobOrder(models.Model):
             return super().create(val)
 
     def action_confirm(self):
-        ''' confirm work action. changing the state to confirmed  and checking if the order line is empty or not'''
+        ''' confirm work action. changing the state to confirmed  and
+        checking if the order line is empty or not'''
         if self.job_order_line_ids:
             if self.total_amount <= 0:
                 raise ValidationError('Total Amount must be greater than 0')
@@ -99,11 +104,12 @@ class WorkshopJobOrder(models.Model):
             raise UserError('Job Order Lines cannot be Empty')
 
     def action_cancel(self):
-        '''cancel work action. changing the state to canceled and updating the ongoing job status'''
+        '''cancel work action. changing the state to canceled and
+        updating the ongoing job status and askingcancel reaseon (wizard)'''
         self.state = 'draft'
         self.bay_id.bay_status = 'free'
         self.ensure_one()
-        return{
+        return {
             'type': 'ir.actions.act_window',
             'name': 'Workshop Job Cancel',
             'res_model': 'workshop.job.cancel',
@@ -111,15 +117,16 @@ class WorkshopJobOrder(models.Model):
             'view_type': 'form',
             'target': 'new',
             'context': {
-                'default_sequence':self.sequence,
-                'default_vin':self.vehicle_id.vin,
-                'default_model':self.vehicle_id.model,
-                'default_year':self.vehicle_id.year
+                'default_sequence': self.sequence,
+                'default_vin': self.vehicle_id.vin,
+                'default_model': self.vehicle_id.model,
+                'default_year': self.vehicle_id.year
             }
         }
 
     def action_start(self):
-        '''start button function set the bay status to occupied and set the ongoing job and bay availability check'''
+        '''start button function set the bay status to occupied and
+        set the ongoing job and bay availability check'''
         if self.bay_id.bay_status == 'free':
             self.bay_id.bay_status = 'occupied'
             self.bay_id.ongoing_job_ids = self
@@ -136,6 +143,13 @@ class WorkshopJobOrder(models.Model):
     def action_delivered(self):
         '''delivery logic'''
         self.state = 'delivered'
+
+    def action_reset_to_draft(self):
+        '''reset to draft after invoice or quatation is created'''
+        self.state = 'draft'
+        if self.sale_order_ids or self.invoice_ids:
+            raise UserError(
+                "Cannot Reset Record it already have sale orders or invoice, Delete the sale orders or quotation first")
 
     @api.onchange('customer_id')
     def _onchange_customer_id(self):
@@ -174,9 +188,9 @@ class WorkshopJobOrder(models.Model):
             }
 
     def action_quotation(self):
-        '''quotation creation logic'''
+        '''quotation creation logic on work order model'''
         self.ensure_one()
-        '''quotation creation logic for work order'''
+        '''quotation creation logic for work order. getting the order line in an array and pass them'''
         sale_order_lines = [Command.create({'product_id': line.product_id.id, })
                             for line in self.job_order_line_ids]
         sale_order = self.env['sale.order'].create({
@@ -196,13 +210,14 @@ class WorkshopJobOrder(models.Model):
         }
 
     def action_invoiced(self):
-        '''invoice creation logic'''
+        '''invoice creation logic on owrk order model'''
         self.ensure_one()
-        '''invoice creation logic for work order'''
+        '''invoice creation logic for work order. getting the order line in an array and pass them'''
         if self.sale_order_ids:
             if self.sale_order_ids.state not in {"sale"}:
                 self.sale_order_ids.action_confirm()
             invoice = self.sale_order_ids._create_invoices()
+
         else:
             sale_order_lines = [
                 Command.create({'product_id': line.product_id.id}) for line in
@@ -266,7 +281,7 @@ class WorkshopJobOrder(models.Model):
 
     def unlink(self):
         '''prevent deleting work order that have quotation or invoice'''
-        if self.sale_order_ids:
+        if self.sale_order_ids or self.invoice_ids:
             raise UserError(
                 "Cannot Delete Record it already have sale orders, Instead Archive Record")
         return super().unlink()
@@ -279,14 +294,15 @@ class WorkshopJobOrder(models.Model):
                     act_type_xmlid='mail.mail_activity_data_call',
                     date_deadline=fields.Date.today() + relativedelta(days=1),
                     user_id=self.env.user.id, summary='Test Activity Move')
-                record.is_schedule_activity=True
+                record.is_schedule_activity = True
 
             if record.customer_id.email:
-                email_template = self.env.ref('workshop.email_template_workshop_job_order')
+                email_template = self.env.ref(
+                    'workshop.email_template_workshop_job_order')
                 email_values = {'email_to': record.customer_id.email}
                 email_template.send_mail(
                     record.id,
-                    force_send=True,email_values=email_values)
+                    force_send=True, email_values=email_values)
 
     @api.depends('appointment_count')
     def _compute_appointment_count(self):
@@ -307,3 +323,22 @@ class WorkshopJobOrder(models.Model):
                 ('work_order_ids', '=', self.id)
             ]
         }
+
+    def _cron_workshop_delivery_reminder(self):
+        '''setting delivery reminder if the customer didn't pick up the vehicle after job is done'''
+        print('hhhhhhhhhhhhhhhhhh')
+        email_template = self.env.ref(
+            'workshop.email_template_workshop_delivery_reminder')
+
+        records = self.env['workshop.job.order'].search([])
+        for record in records:
+            print(record)
+            if record.state in ['done', 'quotation', 'invoiced']:
+                print('first loop')
+                if record.customer_id.email:
+                    print('Second loop')
+                    email_values = {'email_to': record.customer_id.email}
+                    email_template.send_mail(
+                        record.id,
+                        force_send=True, email_values=email_values)
+                    print('mail send')

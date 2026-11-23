@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 
 
 class CalendarEvent(models.Model):
+    '''inheriting calendar evnet module for managing appointment'''
     _inherit = ['calendar.event']
     _rec_name = 'sequence'
 
@@ -76,9 +77,10 @@ class CalendarEvent(models.Model):
 
         return super().create(vals_list)
 
-    def write(self, vals):
-        '''Write appointments'''
-        return super().write(vals)
+    #
+    # def write(self, vals):
+    #     '''Write appointments'''
+    #     return super().write(vals)
 
     def action_automate_work_appointment(self):
         '''setting the job as done and change the bay availability'''
@@ -102,14 +104,8 @@ class CalendarEvent(models.Model):
             'workshop.email_template_workshop_appointment_reminder')
 
         for record in records:
-            if record.customer_id.email and (record.start - timedelta(days=1)).date() == today_start :
-                email_values = {'email_to': record.customer_id.email}
-                email_template.send_mail(
-                    record.id,
-                    force_send=True, email_values=email_values)
-            if record.work_order_ids.state != 'delivered':
-                email_template = self.env.ref(
-                    'workshop.email_template_workshop_appointment_reminder_delivery')
+            if record.customer_id.email and (
+                    record.start - timedelta(days=1)).date() == today_start:
                 email_values = {'email_to': record.customer_id.email}
                 email_template.send_mail(
                     record.id,
