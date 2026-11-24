@@ -22,7 +22,8 @@ class CalendarEvent(models.Model):
         ('work_order', 'Work Order'),
     ], default='draft', string="Job Order Status", readonly=True)
     work_order_ids = fields.One2many('workshop.job.order', 'appointment_id',
-                                     string='Work Order')
+                                     string='Work Order',readonly=True)
+    work_order_count = fields.Integer(compute='_compute_work_order_count')
     company_id = fields.Many2one(
         'res.company', default=lambda self: self.env.company
     )
@@ -77,11 +78,6 @@ class CalendarEvent(models.Model):
 
         return super().create(vals_list)
 
-    #
-    # def write(self, vals):
-    #     '''Write appointments'''
-    #     return super().write(vals)
-
     def action_automate_work_appointment(self):
         '''setting the job as done and change the bay availability'''
         email_template = self.env.ref(
@@ -98,7 +94,7 @@ class CalendarEvent(models.Model):
         '''setting appointment reminder'''
         today_start = fields.Date.today()
         records = self.env['calendar.event'].search([
-            ('state', '=', 'confirmed'),
+            ('state', '=', 'confirmed')
         ])
         email_template = self.env.ref(
             'workshop.email_template_workshop_appointment_reminder')
@@ -110,3 +106,23 @@ class CalendarEvent(models.Model):
                 email_template.send_mail(
                     record.id,
                     force_send=True, email_values=email_values)
+
+    @api.depends('work_order_count')
+    def _compute_work_order_count(self):
+        '''finding customer's appointment count'''
+        for record in self:
+            record.work_order_count = len(record.work_order_ids)
+
+    def action_view_work_order(self):
+        '''show the appointment while clicking smart button'''
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'workshop.job.order',
+            'name': ' Work Order',
+            'view_mode': 'list,form',
+            'target': 'current',
+            'domain': [
+                ('appointment_id', '=', self.id)
+            ]
+        }

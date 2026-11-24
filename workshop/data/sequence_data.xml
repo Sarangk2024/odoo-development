@@ -13,7 +13,7 @@
         </record>
 
          <record id="ir_sequence_workshop_appointmentr_sequence" model="ir.sequence">
-            <field name="name">AppointmentSequence</field>
+            <field name="name">Appointment Sequence</field>
             <field name="implementation">standard</field>
             <field name="code">calendar.event</field>
             <field name="prefix">AP/%(year)s/</field>

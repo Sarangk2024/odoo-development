@@ -71,8 +71,7 @@ class WorkshopJobOrder(models.Model):
     )
     is_schedule_activity = fields.Boolean(string="Activity Status",
                                           default=False)
-    appointment_id = fields.Many2one('calendar.event', string="Appointments",
-                                     ondelete="cascade")
+    appointment_id = fields.Many2one('calendar.event', string="Appointments",readonly=True,ondelete="restrict")
     appointment_count = fields.Integer(string="Appointment Count",
                                        compute="_compute_appointment_count")
 
@@ -293,7 +292,7 @@ class WorkshopJobOrder(models.Model):
                 record.activity_schedule(
                     act_type_xmlid='mail.mail_activity_data_call',
                     date_deadline=fields.Date.today() + relativedelta(days=1),
-                    user_id=self.env.user.id, summary='Test Activity Move')
+                    user_id=self.env.user.id, summary='Schedule Call')
                 record.is_schedule_activity = True
 
             if record.customer_id.email:
@@ -326,19 +325,14 @@ class WorkshopJobOrder(models.Model):
 
     def _cron_workshop_delivery_reminder(self):
         '''setting delivery reminder if the customer didn't pick up the vehicle after job is done'''
-        print('hhhhhhhhhhhhhhhhhh')
         email_template = self.env.ref(
             'workshop.email_template_workshop_delivery_reminder')
 
         records = self.env['workshop.job.order'].search([])
         for record in records:
-            print(record)
             if record.state in ['done', 'quotation', 'invoiced']:
-                print('first loop')
                 if record.customer_id.email:
-                    print('Second loop')
                     email_values = {'email_to': record.customer_id.email}
                     email_template.send_mail(
                         record.id,
                         force_send=True, email_values=email_values)
-                    print('mail send')

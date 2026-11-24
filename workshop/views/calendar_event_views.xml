@@ -13,7 +13,16 @@
                 <field name="vehicle_id"></field>
                 <field name="job_type_id"></field>
                 <field name="work_order_ids" widget="many2many_tags"/>
+            </xpath>
 
+            <xpath expr="//field[@name='videocall_location']" position="attributes">
+                 <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='res_record']" position="attributes">
+                 <attribute name="invisible">1</attribute>
+            </xpath>
+             <xpath expr="//button[@name='action_open_composer']" position="attributes">
+                 <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//button[@name='action_open_composer']"
@@ -30,6 +39,18 @@
                         string="Create Work Order" class="btn-primary"
                         invisible="state in ['draft','work_order']"/>
                 <field name="state" widget="statusbar"/>
+            </xpath>
+
+            <xpath expr="//sheet" position="inside">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_work_order" type="object"
+                            class="oe_stat_button" icon="history"
+                            invisible="work_order_count == 0">
+
+                        <field name="work_order_count" widget="statinfo"
+                               string="Work Order"/>
+                    </button>
+                </div>
             </xpath>
 
         </field>

@@ -31,7 +31,7 @@
                             groups="workshop.group_workshop_receptionist,workshop.group_workshop_manager"/>
                     <button name="action_reset_to_draft" type="object"
                             string="Reset to Draft" class="btn-primary"
-                            invisible="state not in ['quotation','invoiced']"
+                            invisible="state not in ['quotation','invoiced','delivered']"
                             groups="workshop.group_workshop_receptionist,workshop.group_workshop_manager"/>
                     <button name="action_delivered" type="object"
                             string="Deliver" class="btn-primary"

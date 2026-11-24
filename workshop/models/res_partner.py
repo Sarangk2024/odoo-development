@@ -27,7 +27,6 @@ class ResPartner(models.Model):
         '''finding customer's vehicle count'''
         for record in self:
             record.vehicle_count = len(record.vehicle_ids)
-        print(self.vehicle_count)
 
     def action_view_vehicles(self):
         '''To show the vehicle list view when user click the vehicle smart button'''

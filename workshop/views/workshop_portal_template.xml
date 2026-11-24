@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="workshop_details_page" name="Workshop"
+              inherit_id="portal.portal_docs_entry" priority="30">
+        <xpath expr="//div" position="after">
+            <div>
+                <button>new</button>
+
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
