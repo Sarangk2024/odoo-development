@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
-        <menuitem id="workshop_root_menu" name="Workshop">
-            <menuitem id="vehicle_menu" name="Vehicle" action="vehicle_management_action"/>
-            <menuitem id="work_job_order" name="Work Order" action="workshop_job_order_action"/>
+        <menuitem id="workshop_root_menu" name="Workshop"
+                  web_icon="workshop,static/description/icon.png">
+            <menuitem id="vehicle_menu" name="Vehicle"
+                      action="vehicle_management_action"/>
+            <menuitem id="work_job_order_menu" name="Work Order"
+                      action="workshop_job_order_action"
+                      sequence="1"/>
+            <menuitem id="workshop_appointment_menu" name="Appointment"
+                      action="workshop_appointmen_action"
+                      sequence="2"/>
+            <menuitem id="workshop_report_menu" name="Report"
+                      action="workshop_report_action"
+                      sequence="3"/>
 
-            <menuitem id="job_type_configuration" name="Configuration">
-                <menuitem id="configuration_first_level_job_type" name="Job Type" action="job_type_action"/>
-                <menuitem id="configuration_first_level_bay_type" name="Bay Management" action="workshop_management_action"/>
-
+            <menuitem id="workshop_configurataion_menu" name="Configuration">
+                <menuitem id="workshop_configuration_job_type"
+                          name="Job Type" action="job_type_action"/>
+                <menuitem id="workshop_configuration_bay_menu"
+                          name="Bay Management"
+                          action="workshop_bay_action"/>
             </menuitem>
-
         </menuitem>
     </data>
-
-
 </odoo>
-

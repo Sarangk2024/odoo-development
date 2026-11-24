@@ -1,24 +1,48 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Workshop',
-    'version': '20.0.1',
+    'version': '20.0.0.0.1',
     'summary': 'Workshop management ERP',
     'description': """Workshop management is a ERP software that centralise all the operations like service, repaires, etc.""",
     'sequence': 1,
     'depends': [
         'base',
         'mail',
-        'hr'
+        'hr',
+        'sale',
+        'account',
+        'base_automation',
+        'calendar',
     ],
 
     'data': [
+        'security/workshop_groups.xml',
         'security/ir.access.csv',
+
         'views/workshop_bay_views.xml',
         'views/vehicle_management_views.xml',
         'views/workshop_job_order_views.xml',
         'views/job_type_views.xml',
-        'data/default_data.xml',
+        'views/res_partner_views.xml',
+        'views/sale_order_views.xml',
+        'views/account_move_views.xml',
+        'views/workshop_report.xml',
+        'views/calendar_event_views.xml',
+        'views/workshop_portal_template.xml',
+
+        'data/job_type_data.xml',
+        'data/workshop_bay_data.xml',
         'data/sequence_data.xml',
+        'data/workshop_work_done_mail_template.xml',
+        'data/workshop_appointment_mail_template.xml',
+        'data/workshop_appointment_reminder_template.xml',
+        'data/workshop_job_order_delivery_reminder_template.xml',
+        'data/portal_entry_data.xml',
+        'data/ir_cron_data.xml',
+        'data/workshop_server_action.xml',
+
+        'wizard/workshop_job_cancel_view.xml',
+
         'views/workshop_menu.xml',
     ],
 

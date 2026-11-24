@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="workshop_job_cancel_action" model="ir.actions.act_window">
+        <field name="name">Workshop Job cancel</field>
+        <field name="res_model">workshop.job.cancel</field>
+        <field name="view_mode">form</field>
+    </record>
+</odoo>

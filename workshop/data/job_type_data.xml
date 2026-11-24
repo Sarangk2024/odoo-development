@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="default_job_type_data_washing" model="job.type">
+            <field name="job_type">Washing</field>
+        </record>
+        <record id="default_job_type_data_alignment" model="job.type">
+            <field name="job_type">Alignment</field>
+        </record>
+        <record id="default_job_type_data_repair" model="job.type">
+            <field name="job_type">Repair</field>
+        </record>
+        <record id="default_job_type_data_paintiing" model="job.type">
+            <field name="job_type">Painting</field>
+        </record>
+    </data>
+
+</odoo>
