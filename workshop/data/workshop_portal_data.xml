@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <record id="portal_entry_workshop_order" model="portal.entry">
+        <field name="name">Work Orders</field>
+        <field name="description">See the work orders,status &amp; other info</field>
+        <field name="url">my/workshop</field>
+        <field name="image" type="bytes" file="workshop/static/src/img/workshop_order.svg"/>
+        <field name="is_config_card" eval="True"/>
+    </record>
+</odoo>

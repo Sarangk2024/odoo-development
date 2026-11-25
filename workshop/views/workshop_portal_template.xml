@@ -1,13 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="workshop_details_page" name="Workshop"
-              inherit_id="portal.portal_docs_entry" priority="30">
-        <xpath expr="//div" position="after">
-            <div>
-                <button>new</button>
+    <template id="workshop_details_page" name="My Work Orders=">
+        <t t-call="portal.portal_layout" breadcrumbs_searchbar="True">
 
-            </div>
-        </xpath>
+            <t t-call="portal.portal_searchbar" breadcrumbs_searchbar="True"
+               title.translate="Work Orders"/>
+            <t t-if="not workorders">
+                <p class="alert alert-warning">There are currently no Work
+                    orders for your account.
+                </p>
+            </t>
+            <t t-if="workorders" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active o_not_editable">
+                        <th name="sequence">Work Order #</th>
+                        <th name="job_date">Wook Order Date</th>
+                        <th name="vehicle_id">Vehicle</th>
+                        <th name="total_amount">Amount</th>
+                        <th name="state">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="workorders" t-as="wo">
+                        <tr>
+                            <td>
+                                <t t-out="wo.sequence"/>
+                            </td>
+                            <td>
+                                <t t-out="wo.job_date"/>
+                            </td>
+                            <td>
+                                <t t-out="wo.vehicle_id.license_plate"/>
+                            </td>
+                            <td>
+                                <t t-out="wo.total_amount"/>
+                            </td>
+                            <td>
+                                <t t-out="wo.state"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </t>
+        </t>
     </template>
-
 </odoo>

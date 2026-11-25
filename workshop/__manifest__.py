@@ -37,9 +37,9 @@
         'data/workshop_appointment_mail_template.xml',
         'data/workshop_appointment_reminder_template.xml',
         'data/workshop_job_order_delivery_reminder_template.xml',
-        'data/portal_entry_data.xml',
         'data/ir_cron_data.xml',
         'data/workshop_server_action.xml',
+        'data/workshop_portal_data.xml',
 
         'wizard/workshop_job_cancel_view.xml',
 

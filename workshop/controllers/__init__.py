@@ -1,1 +1,1 @@
-from . import workshop
+from . import workshop_portal
