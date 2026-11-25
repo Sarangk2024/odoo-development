@@ -2,6 +2,7 @@ from odoo import http
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
 
+
 class CustomPortal(CustomerPortal):
     '''Adding workshop job order card in customer portal '''
 
@@ -13,8 +14,12 @@ class CustomPortal(CustomerPortal):
         values['workorder'] = workorders
         return values
 
-    @http.route(["/my/workshop/<int:sequence>"], type='http', auth='public', methods=['GET'], website=True)
+    @http.route(["/my/workshop"], type='http', auth='public', methods=['GET'],
+                website=True)
     def workshop_details(self, **kwargs):
         work_orders = request.env['workshop.job.order'].sudo().search([])
         return request.render('workshop.workshop_details_page',
-                              {'workorders': work_orders})
+                              {
+                                  'workorders': work_orders,
+                                  'page_name': 'Workshop',
+                              })

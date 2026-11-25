@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <template id="portal_my_home_menu_workshop"
+              name="Portal layout : Work Order menu entries"
+              inherit_id="portal.portal_breadcrumbs" priority="30">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li name="workshop_breadcrumb" t-if="page_name == 'Workshop'"
+                t-attf-class="breadcrumb-item #{'active ' if not work_orders else ''}">
+                <a t-if="work_orders"
+                   t-attf-href="/my/workshop?{{ keep_query() }}">Work Orders
+                </a>
+                <t t-else="">Work Orders</t>
+            </li>
+        </xpath>
+    </template>
+
     <template id="workshop_details_page" name="My Work Orders=">
         <t t-call="portal.portal_layout" breadcrumbs_searchbar="True">
-
             <t t-call="portal.portal_searchbar" breadcrumbs_searchbar="True"
                title.translate="Work Orders"/>
             <t t-if="not workorders">
