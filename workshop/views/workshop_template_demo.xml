@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal -->
+    <template id="portal_my_events" name="My Events">
+        <t t-call="portal.portal_layout" breadcrumbs_searchbar="True">
+            <t t-call="portal.portal_searchbar" title.translate="Events"/>
+            <t t-if="not grouped_workorders">
+                <div class="alert alert-warning" role="alert">
+                    <p class="mb-0">There are no event registrations.</p>
+                </div>
+            </t>
+            <t t-else="" t-call="portal.portal_table">
+                <thead>
+                    <tr class="active">
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Attendee</th>
+                        <th>Ticket Type</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody t-foreach="grouped_workorders" t-as="registrations">
+                    <tr name="groupby" t-if="not groupby == 'none'" class="table-light">
+                        <th colspan="6">
+                            <span t-if="groupby == 'customer_id'" t-field="registrations[0].customer_id.name"/>
+                            <span t-elif="groupby == 'state'" t-field="registrations[0].state"/>
+                        </th>
+                    </tr>
+                    <tr t-foreach="workorders" t-as="registration">
+                        <td name="sequence">
+                            <span t-field="registration.sequence" t-att-title="registration.sequence"/>
+                        </td>
+                        <td>
+                            <span t-field="registration.job_date" t-options='{"widget": "datetime", "hide_seconds": True}'/>
+                        </td>
+                        <td><span t-field="registration.customer_id.name"/></td>
+                        <td><span t-field="registration.vehicle_id.vin"/></td>
+                        <td>
+                            <span t-if="registration.state == 'done'"
+                                class="badge rounded-pill text-bg-success">
+                                <i class="oi oi-fw" data-icon="check" aria-label="Attended" title="Attended" role="img"/>
+                                <span class="d-none d-md-inline"> Attended</span>
+                            </span>
+                            <span t-elif="registration.state == 'draft'"
+                                class="badge rounded-pill o_badge_color_0">
+                                <i class="oi oi-fw" data-icon="close" aria-label="Cancelled" title="Cancelled" role="img"/>
+                                <span class="d-none d-md-inline"> Cancelled</span>
+                            </span>
+                            <span t-elif="registration.state == 'delivered'"
+                                class="badge rounded-pill text-bg-info">
+                                <i class="oi oi-fw" data-icon="check" aria-label="Registered" title="Registered" role="img"/>
+                                <span class="d-none d-md-inline"> Registered</span>
+                            </span>
+                            <span t-else=""
+                                class="badge rounded-pill text-bg-info">
+                                <i class="oi oi-fw" data-icon="schedule" aria-label="Unconfirmed" title="Unconfirmed" role="img"/>
+                                <span class="d-none d-md-inline"> Unconfirmed</span>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </t>
+        </t>
+    </template>
+</odoo>
