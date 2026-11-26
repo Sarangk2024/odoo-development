@@ -50,7 +50,7 @@ class WorkshopJobOrder(models.Model):
                                   string="Currency", default=lambda
             self: self.env.company.currency_id)
     total_amount = fields.Monetary(string="Total Amount",
-                                   compute='_compute_total_amount', store=True)
+                                   compute='_compute_total_amount')
     active = fields.Boolean(default=True)
     invoice_ids = fields.One2many('account.move', 'job_order_id',
                                   string="Invoice",

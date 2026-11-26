@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <template id="portal_my_home_menu_workshop"
               name="Portal layout : Work Order menu entries"
               inherit_id="portal.portal_breadcrumbs" priority="30">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
             <li name="workshop_breadcrumb" t-if="page_name == 'Workshop'"
-                t-attf-class="breadcrumb-item #{'active ' if not work_orders else ''}">
+                t-attf-class="breadcrumb-item #{'active' if not work_orders else ''}">
                 <a t-if="work_orders"
                    t-attf-href="/my/workshop?{{ keep_query() }}">Work Orders
                 </a>
@@ -26,36 +25,116 @@
             </t>
             <t t-if="workorders" t-call="portal.portal_table">
                 <thead>
-                    <tr class="active o_not_editable">
+                    <tr class="active ">
                         <th name="sequence">Work Order #</th>
-                        <th name="job_date">Wook Order Date</th>
-                        <th name="vehicle_id">Vehicle</th>
-                        <th name="total_amount">Amount</th>
-                        <th name="state">Status</th>
+                        <th name="job_date">Work Order Date</th>
+                        <th name="mechanic_ids">Mechanics</th>
+                        <th name="vehicle_id" class="text-end">Vehicle</th>
+                        <th name="total_amount" class="text-end">Amount</th>
+                        <th name="state" class="text-end">Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <t t-foreach="workorders" t-as="wo">
-                        <tr>
-                            <td>
-                                <t t-out="wo.sequence"/>
-                            </td>
-                            <td>
-                                <t t-out="wo.job_date"/>
-                            </td>
-                            <td>
-                                <t t-out="wo.vehicle_id.license_plate"/>
-                            </td>
-                            <td>
-                                <t t-out="wo.total_amount"/>
-                            </td>
-                            <td>
-                                <t t-out="wo.state"/>
-                            </td>
-                        </tr>
-                    </t>
+                    <tr>
+                        <t t-foreach="workorders" t-as="wo">
+                            <tr>
+                                <td>
+                                    <t t-out="wo.sequence"/>
+                                </td>
+                                <td>
+                                    <span t-out="wo.job_date"
+                                          t-options='{"widget": "datetime", "hide_seconds": True}'/>
+                                </td>
+                                <td>
+                                    <t t-out="wo.mechanic_ids.display_name"/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="wo.vehicle_id.license_plate"/>
+                                </td>
+                                <td class="text-end">
+                                    <t t-out="wo.total_amount" t-options='{"widget": "monetary", "display_currency": wo.currency_id}'/>
+                                </td>
+                                <td class="text-end">
+                                   <span t-if="wo.state == 'draft'"
+                                          class="badge rounded-pill o_badge_color_0">
+                                        <i class="oi oi-fw" data-icon="close"
+                                           aria-label="draft"
+                                           title="Draft" role="img"/>
+                                        <span class="d-none d-md-inline">
+                                            Draft
+                                        </span>
+                                    </span>
+                                    <span t-elif="wo.state == 'confirmed'"
+                                          class="badge rounded-pill text-bg-info">
+                                        <i class="oi oi-fw" data-icon="person"
+                                           aria-label="Confirmed"
+                                           title="Confirmed" role="img"/>
+                                        <span class="d-none d-md-inline">
+                                            Confirmed
+                                        </span>
+                                    </span>
+                                    <span t-elif="wo.state == 'in_progress'"
+                                          class="badge rounded-pill text-bg-info">
+                                        <i class="oi oi-fw" data-icon="work"
+                                           aria-label="In_progress"
+                                           title="In_progress" role="img"/>
+                                        <span class="d-none d-md-inline">
+                                            In Progress
+                                        </span>
+                                    </span>
+                                    <span t-elif="wo.state == 'done'"
+                                          class="badge rounded-pill text-bg-info">
+                                        <i class="oi oi-fw" data-icon="check"
+                                           aria-label="Done"
+                                           title="Done" role="img"/>
+                                        <span class="d-none d-md-inline">
+                                            Done
+                                        </span>
+                                    </span>
+                                    <span t-elif="wo.state == 'quotation'"
+                                          class="badge rounded-pill text-bg-info">
+                                        <i class="oi oi-fw" data-icon="circle"
+                                           aria-label="Quotation"
+                                           title="Quotation" role="img"/>
+                                        <span class="d-none d-md-inline">
+                                            Quotation
+                                        </span>
+                                    </span>
+                                    <span t-elif="wo.state == 'invoiced'"
+                                          class="badge rounded-pill text-bg-info">
+                                        <i class="oi oi-fw" data-icon="business"
+                                           aria-label="Invoiced"
+                                           title="Invoiced" role="img"/>
+                                        <span class="d-none d-md-inline">
+                                            Invoiced
+                                        </span>
+                                    </span>
+                                    <span t-elif="wo.state == 'delivered'"
+                                          class="badge rounded-pill text-bg-info">
+                                        <i class="oi oi-fw" data-icon="sell"
+                                           aria-label="Delivered"
+                                           title="Delivered" role="img"/>
+                                        <span class="d-none d-md-inline">
+                                            Delivered
+                                        </span>
+                                    </span>
+                                    <span t-else=""
+                                          class="badge rounded-pill text-bg-info">
+                                        <i class="oi oi-fw" data-icon="schedule"
+                                           aria-label="Unconfirmed"
+                                           title="Unconfirmed" role="img"/>
+                                        <span class="d-none d-md-inline">
+                                            Unconfirmed
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </t>
+                    </tr>
+
                 </tbody>
             </t>
         </t>
     </template>
+
 </odoo>
