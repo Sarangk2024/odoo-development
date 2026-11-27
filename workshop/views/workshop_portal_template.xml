@@ -181,9 +181,8 @@
             </h5>
             <h5>
                 Images:
-                <img t-att-src="'data:image/png;base64,%s' %workdetails.image_id"/>
-<!--                <img t-att-src="image_data_uri(workdetails.image_id)"/>-->
-
+                <img t-att-src="workdetails.get('workdetails.image_id')"
+                     class="img img-fluid oe_product_image_img h-100 w-100"/>
             </h5>
             <h5>
                 <t t-out="workdetails.total_amount"
