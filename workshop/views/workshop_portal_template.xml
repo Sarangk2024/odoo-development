@@ -4,30 +4,18 @@
               name="Portal layout : Work Order menu entries"
               inherit_id="portal.portal_breadcrumbs" priority="30">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-<!--            <li name="workshop_breadcrumb" t-if="page_name == 'Workshop'"-->
-<!--                t-attf-class="breadcrumb-item #{'active' if not work_orders else ''}">-->
-<!--                <a t-if="work_orders"-->
-<!--                   t-attf-href="/my/workshop?{{ keep_query() }}">Work Orders-->
-<!--                </a>-->
-<!--                <t t-else="">Work Orders</t>-->
-<!--            </li>-->
-
-<!--            <li name="workshop_breadcrumb" t-if="page_name == 'Workshop_details'"-->
-<!--                t-attf-class="breadcrumb-item #{'active' if not work_details else ''}">-->
-<!--                <a t-if="work_details"-->
-<!--                   t-attf-href="/my/workshop/{id}?{{ keep_query() }}">details-->
-<!--                </a>-->
-<!--                <t t-else="">Work Orders</t>-->
-<!--            </li>-->
-            <li id="portal_breadcrumbs_workshop" t-if="page_name == 'Workshop'" t-attf-class="breadcrumb-item #{'active ' if not workorders else ''}">
-                <a t-if="workorders" >Work Orders</a>
-                <t t-else="">Work Orders</t>
+            <li id="portal_breadcrumbs_workshop" t-if="page_name == 'Workshop'"
+                t-attf-class="breadcrumb-item active">
+                Work Orders
             </li>
-            <li t-elif="page_name == 'Workshop_details'" t-attf-class="breadcrumb-item #{'active ' if not workdetails else ''}">
-                <a t-if="workdetails" t-attf-href="/my/workshop/#{id}?{{ keep_query() }}"><t t-out="workdetails.sequence"/></a>
-                <t t-else=""><t t-out="workdetails.sequence"/></t>
+            <li t-if="page_name == 'Workshop_details'"
+                t-attf-class="breadcrumb-item">
+                <a t-attf-href="/my/workshop">Work Orders</a>
             </li>
-
+            <li t-if="page_name == 'Workshop_details'"
+                t-attf-class="breadcrumb-item active">
+                <t t-out="workdetails.sequence"/>
+            </li>
         </xpath>
     </template>
 
@@ -151,7 +139,6 @@
                             </tr>
                         </t>
                     </tr>
-
                 </tbody>
             </t>
         </t>
@@ -169,18 +156,35 @@
             <h3>
                 <t t-out="workdetails.sequence"/>
             </h3>
-            <h4>
-                <t t-out="workdetails.customer_id.name"/>
-            </h4>
+            <h5>
+                Customer:
+                <span>
+                    <t t-out="workdetails.customer_id.name"/>
+                </span>
+            </h5>
 
             <h5>
                 <span t-out="workdetails.job_date"
                       t-options='{"widget": "datetime", "hide_seconds": True}'/>
             </h5>
             <h5>
+                Mechanics:
+                <span>
+                    <t t-out="workdetails.mechanic_ids.display_name"/>
+                </span>
+            </h5>
+            <h5>
+                Customer Notes:
+                <span>
+                    <t t-out="workdetails.customer_notes"/>
+                </span>
+            </h5>
+            <h5>
+                Images:
+                <img t-att-src="'data:image/png;base64,%s' %workdetails.image_id"/>
+<!--                <img t-att-src="image_data_uri(workdetails.image_id)"/>-->
 
             </h5>
-            <t t-out="workdetails.mechanic_ids.display_name"/>
             <h5>
                 <t t-out="workdetails.total_amount"
                    t-options='{"widget": "monetary", "display_currency": workdetails.currency_id}'/>
@@ -262,6 +266,11 @@
 
             <br/>
             <br/>
+            <t t-if="not lines">
+                <p class="alert alert-warning">There are currently no
+                    orders lines for your Work Order.
+                </p>
+            </t>
             <t t-if="lines" t-call="portal.portal_table">
                 <thead>
                     <tr class="active ">
@@ -287,16 +296,11 @@
                                 <td class="text-end">
                                     <t t-out="line.line_subtotal"/>
                                 </td>
-
                             </tr>
                         </t>
                     </tr>
-
                 </tbody>
             </t>
-
         </t>
     </template>
-
-
 </odoo>

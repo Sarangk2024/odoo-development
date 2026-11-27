@@ -119,6 +119,7 @@
                             <page string="Vehicle images">
                                 <field name="image_id"
                                        widget="many2many_binary"/>
+<!--                                <field name="image_id"/>-->
                             </page>
                         </notebook>
                     </group>

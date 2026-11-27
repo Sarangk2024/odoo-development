@@ -34,6 +34,8 @@ class WorkshopJobOrder(models.Model):
     customer_notes = fields.Text(string="Customer Notes",
                                  help="Customer's reported issue")
     image_id = fields.Many2many('ir.attachment', string="Vehicle Image")
+    # image_id = fields.Image( string="Vehicle Image")
+
     warranty_status = fields.Boolean(string="Under Warranty",
                                      help='indicating whether the vehicle is under warranty')
     repair_instructions = fields.Html(string="Repair Instructions")

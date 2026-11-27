@@ -2,18 +2,14 @@
 from odoo import http
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
-from odoo.exceptions import AccessError, MissingError, ValidationError
-
-
 
 
 class WorkshopPortal(CustomerPortal):
     '''Adding workshop job order card in customer portal '''
-
     @http.route(["/my/workshop"], type='http', auth='user', methods=['GET'],
                 website=True)
     def workshop_details(self, **kwargs):
-        '''For showing the work order details in the customer portal list view '''
+        '''For showing the work order details in the customer portal list view controller'''
         if request.env.user.has_group(
                 "workshop.group_workshop_manager"):
             work_orders = request.env['workshop.job.order'].sudo().search([])
@@ -28,9 +24,9 @@ class WorkshopPortal(CustomerPortal):
 
     @http.route(["/my/workshop/<int:id>"], type="http", auth="user",
                 methods=['GET'],website=True)
-    def portal_order_page(self, id, **kw):
-        '''detailed work order detailes page'''
-        work_details =self.env['workshop.job.order'].sudo().browse(id)
+    def pworkshop_order_page(self, id, **kw):
+        '''detailed work order detailes pagecontroller '''
+        work_details =request.env['workshop.job.order'].sudo().browse(id)
         lines = work_details.job_order_line_ids
 
         return request.render('workshop.workshop_work_order_details_page',
@@ -39,3 +35,4 @@ class WorkshopPortal(CustomerPortal):
                                   'page_name': 'Workshop_details',
                                   'lines': lines
                               })
+
